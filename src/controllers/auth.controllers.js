@@ -360,6 +360,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
     user.forgotPasswordTokenExpiry = undefined;
     user.forgotPasswordToken = undefined;
+    user.refreshToken = ''
 
     user.password = newPassword;
     await user.save({ validateBeforeSave: false });
