@@ -11,7 +11,6 @@ const userSchema = new Schema(
             type: String,
             required: true,
             enum: AvailableUserRoles,
-            default: UserRolesEnum.MEMBER
         },
         avatar: {
             type: {
