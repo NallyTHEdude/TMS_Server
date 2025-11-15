@@ -1,15 +1,27 @@
+// USERE ENUMS
 export const UserRolesEnum = {
     ADMIN: 'admin',
     LANDLORD: 'landlord',
     TENANT: 'tenant'
 }
-
 export const AvailableUserRoles = Object.values(UserRolesEnum);
 
-export const TaskStatusEnum = {
-    TODO : 'to_do',
-    IN_PROGRESS : 'in_progress',
-    DONE : 'done'
-}
 
-export const AvailableTaskStatus = Object.values(TaskStatusEnum);
+
+// PROPERTY ENUMS
+export const PropertyTypesEnum = {
+    APPARTMENT : 'appartment',
+    VILLA : 'villa',
+    FLAT : 'flat',
+    COMMERCIAL : 'commercial'
+}
+export const AvailablePropertyTypes = Object.values(PropertyTypesEnum);
+
+export const PropertyStatusEnum = {
+    VACANT: 'vacant',
+    OCCUPIED: 'occupied',
+    UNDER_MAINTENANCE: 'under-maintenance',
+    INACTIVE : 'inactive', // When a landlord wants to pause listing it, or the admin hides it for rule violations or data issues.
+}
+export const AvailablePropertyStatus = Object.values(PropertyStatusEnum);
+
