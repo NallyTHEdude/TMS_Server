@@ -40,7 +40,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | Field           | Type                                                           | Description                                    |
 | --------------- | -------------------------------------------------------------- | ---------------------------------------------- |
 | `id`            | UUID / ObjectId (PK)                                           | Unique identifier for property                 |
-| `status`        | ENUM('vacant', 'occupied', 'under-maintenance', 'inactive')    | Property status                                |
+| `status`        | ENUM('vacant', 'occupied', 'under_maintenance', 'inactive')    | Property status                                |
 | `name`          | String                                                         | Property title or name                         |
 | `description`   | String                                                         | Optional property description                  |
 | `issues`        | [Issues-Subdocument]                                           | issue tags by tenants. Eg:['water', 'plumbing']|
