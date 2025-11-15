@@ -47,8 +47,8 @@ Notes: keep authentication and profile management centralized under `/api/v1/use
 
 These endpoints manage the centralized `User` profile and settings used by all roles.
 
-| Method   | Endpoint            | Description                             | Status |
-| -------- | ------------------- | --------------------------------------- | ------ |
+| Method   | Endpoint            | Description                             | Status  |
+| -------- | ------------------- | --------------------------------------- | ------- |
 | `GET`    | `/profile` or `/me` | Get logged-in user's profile            | ✅      |
 | `PATCH`  | `/update-details`   | Update user details (name, phone, etc.) | ✅      |
 | `PATCH`  | `/update-avatar`    | Upload or update profile picture        | ✅      |
@@ -66,16 +66,17 @@ These endpoints manage the centralized `User` profile and settings used by all r
 
 ## 🏠 PROPERTY ROUTES (`/api/v1/properties`)
 
-| Method   | Endpoint | Description                                                         | Status |
-| -------- | -------- | ------------------------------------------------------------------- | ------ |
-| `POST`   | `/add`   | Add a new property (auth required; landlord role)                   |        |
-| `GET`    | `/all`   | Get all properties owned by the logged-in landlord (role: landlord) |        |
-| `GET`    | `/:id`   | Get a single property’s details                                     |        |
-| `PATCH`  | `/:id`   | Update property info (owner or admin)                               |        |
-| `DELETE` | `/:id`   | Delete a property (owner or admin)                                  |        |
+| Method   | Endpoint           | Description                                                         | Status |
+| -------- | -------------------| ------------------------------------------------------------------- | ------ |
+| `POST`   | `/add`             | Add a new property (auth required; landlord role)                   |        |
+| `GET`    | `/all`             | Get all properties owned by the logged-in landlord (role: landlord) |        |
+| `GET`    | `/:id`             | Get a single property’s details                                     |        |
+| `PATCH`  | `/:id`             | Update property info (owner or admin)                               |        |
+| `PATCH`  | `/:id/add-issue`   | add issues raised by the logged-in tenant (role: tenant)            |        |
+| `DELETE` | `/:id`             | Delete a property (owner or admin)                                  |        |
 
 **Priority for MVP:**
-`/add`, `/all`, `/:id`
+`/add`, `/all`, `/:id` , `/:id/add-issue`
 
 Data model note: Property stores `landlordId` that references `User.id`.
 
