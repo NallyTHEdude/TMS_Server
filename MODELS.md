@@ -35,7 +35,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 🏠 PROPERTY MODEL (`Property`)
+## 🏠 PROPERTY MODEL (`Property`) ✅ 
 
 | Field           | Type                                                        | Description                                    |
 | --------------- | ----------------------------------------------------------- | ---------------------------------------------- |
@@ -43,7 +43,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `status`        | ENUM('vacant', 'occupied', 'under_maintenance', 'inactive') | Property status                                |
 | `name`          | String                                                      | Property title or name                         |
 | `description`   | String                                                      | Optional property description                  |
-| `issues`        | [{ name, description, priority, createdAt, resolved }]      | Tenant–reported issues (e.g., water, plumbing) |
+| `issues`        | [ISSUES-SUB-OBJECTS]                                        | Tenant–reported issues (e.g., water, plumbing) |
 | `country`       | String                                                      | Country name                                   |
 | `state`         | String                                                      | State name                                     |
 | `city`          | String                                                      | City name                                      |
@@ -64,19 +64,21 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 🏠 ISSUES SUB-MODEL FOR PROPERTIES(`Issues`)
+## 🏠 ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`)
 
-| Field           | Type                                                           | Description                                                      |
-| --------------- | -------------------------------------------------------------- | -----------------------------------------------------------------|
-| `id`            | UUID / ObjectId (PK)                                           | Unique identifier for property                                   |
-| `tag`           | String                                                         | short issue type, e.g:“water”,“electricity”,“plumbing”           |
-| `description`   | String                                                         | Optional detailed message from tenant                            |
-| `reportedBy`    | FK → `User.id`                                                 | Tenant who raised the issue                                      |
-| `createdAt`     | Date                                                           | Timestamp when issue was raised                                  |
-| `isResolved`    | Boolean                                                        | Whether the issue has been resolved                              |
+| Field         | Type                             | Description                                             |
+| ------------- | -------------------------------- | ------------------------------------------------------- |
+| `id`          | UUID / ObjectId (auto-generated) | Unique identifier for each issue                        |
+| `type`        | ENUM(`IssueTypesEnum`)           | Type of issue (electrical, plumbing, water, pest, etc.) |
+| `description` | String                           | Optional detailed message from tenant                   |
+| `reportedBy`  | FK → `User.id`                   | Tenant who raised the issue                             |
+| `priority`    | ENUM(`IssuePriorityEnum`)        | Issue severity (low, medium, high)                      |
+| `createdAt`   | Date                             | Timestamp when issue was raised                         |
+| `isResolved`  | Boolean                          | Mark whether the issue has been resolved                |
 
 **Default Values:**
-* `resolved` → `false`
+* `isResolved` → `false`
+* `priority` → `LOW`
 * `createdAt` → `Date.now()`
 
 ---
