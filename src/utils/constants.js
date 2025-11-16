@@ -48,3 +48,12 @@ export const IssuePriorityEnum = {
     HIGH: 'high'
 };
 export const AvailableIssuePriority = Object.values(IssuePriorityEnum);
+
+
+
+// LANDLORD ENUMS
+export const LandlordStatusEnum = {
+    ACTIVE: 'active',
+    SUSPENDED: 'suspended'
+}
+export const AvailableLandlordStatus = Object.values(LandlordStatusEnum);
