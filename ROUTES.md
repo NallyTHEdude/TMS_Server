@@ -66,17 +66,18 @@ These endpoints manage the centralized `User` profile and settings used by all r
 
 ## 🏠 PROPERTY ROUTES (`/api/v1/properties`)
 
-| Method   | Endpoint           | Description                                                         | Status |
-| -------- | -------------------| ------------------------------------------------------------------- | ------ |
-| `POST`   | `/add`             | Add a new property (auth required; landlord role)                   |        |
-| `GET`    | `/all`             | Get all properties owned by the logged-in landlord (role: landlord) |        |
-| `GET`    | `/:id`             | Get a single property’s details                                     |        |
-| `PATCH`  | `/:id`             | Update property info (owner or admin)                               |        |
-| `PATCH`  | `/:id/add-issue`   | add issues raised by the logged-in tenant (role: tenant)            |        |
-| `DELETE` | `/:id`             | Delete a property (owner or admin)                                  |        |
+| Method   | Endpoint                  | Description                                              | Status |
+| -------- | ------------------------- | -------------------------------------------------------- | ------ |
+| `POST`   | `/add`                    | Add a new property (auth + landlord role required)       |        |
+| `GET`    | `/all`                    | Get all properties owned by the logged-in landlord       |        |
+| `GET`    | `/:propertyId`            | Get a single property’s details                          |        |
+| `PUT`    | `/:propertyId/update`     | Update property info (owner or admin)                    |        |
+| `POST`   | `/:propertyId/add-issues` | Add issues raised by the logged-in tenant (role: tenant) |        |
+| `DELETE` | `/:propertyId/delete`     | Delete a property (owner or admin)                       |        |
+
 
 **Priority for MVP:**
-`/add`, `/all`, `/:id` , `/:id/add-issue`
+`/add`, `/all`, `/:propertyId` , `/:propertyId/add-issue`
 
 Data model note: Property stores `landlordId` that references `User.id`.
 
