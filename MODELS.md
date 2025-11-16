@@ -27,11 +27,14 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `updatedAt`                 | Date                                    | Auto-updated timestamp                          |
 
 **Methods implemented:**
-
 * `comparePassword(password)` → verifies a plain password using bcrypt.
 * `generateAccessToken()` → signs and returns a short-lived JWT.
 * `generateRefreshToken()` → signs and returns a long-lived JWT.
 * `generateTemporaryToken()` → returns `{ unHashedToken, hashedToken, tokenExpiry }` for password reset or email verification.
+
+**Default Values:**
+* `isEmailVerified` → `false`
+* `avatar` → `https://www.placehold.co/200x200`
 
 ---
 
@@ -62,9 +65,17 @@ Each model includes its fields, relationships, and constraints — aligned with 
 * `landlordId` → `User` (role = landlord)
 * One property → many tenants and payments
 
+**Default Values:**
+* `status` → `VACANT`
+* `description` → `null` \
+
+**Methods implemented:**
+* `addIssue(issueData)` → adds a new issue in the issue list.
+* `resolveIssue(issueId)` → marks the issue as resolved and wont be shown.
+
 ---
 
-## 🏠 ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`)
+## 🏠 ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`) ✅ 
 
 | Field         | Type                             | Description                                             |
 | ------------- | -------------------------------- | ------------------------------------------------------- |
@@ -80,6 +91,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 * `isResolved` → `false`
 * `priority` → `LOW`
 * `createdAt` → `Date.now()`
+
 
 ---
 
@@ -101,33 +113,33 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `updatedAt`     | Date                                    | Update timestamp               |
 
 **Relations:**
-
 * `userId` → `User` (role = tenant)
 * `propertyId` → `Property`
 
 ---
 
-## 🏛️ LANDLORD MODEL (`Landlord`)
+## 🏛️ LANDLORD MODEL (`Landlord`) ✅ 
 
 | Field             | Type                                                | Description                       |
 | ----------------- | --------------------------------------------------- | --------------------------------- |
 | `id`              | UUID / ObjectId (PK)                                | Landlord record ID                |
 | `userId`          | FK → `User.id`                                      | Linked landlord user              |
 | `businessName`    | String                                              | Optional business or agency name  |
-<!-- | `payoutAccount`   | String                                              | Payment account (Stripe/Razorpay) | -->
-<!-- | `bankName`        | String                                              | Optional bank name                | -->
-<!-- | `accountNumber`   | String (encrypted)                                  | Bank account number               | -->
-<!-- | `ifscCode`        | String                                              | Bank IFSC / routing code          | -->
 | `earningsToDate`  | Number                                              | Total accumulated earnings        |
 | `totalProperties` | Number                                              | Property count owned              |
-<!-- | `status`          | ENUM('active', 'suspended')                         | Landlord account status           | -->
+| `status`          | ENUM('active', 'suspended')                         | Landlord account status           |
 | `createdAt`       | Date                                                | Creation timestamp                |
 | `updatedAt`       | Date                                                | Update timestamp                  |
 
 **Relations:**
-
 * `userId` → `User` (role = landlord)
 * One landlord → many properties
+
+**Default Values:**
+* `businessName` → `null`
+* `earningsToDate` → `0`
+* `totalProperties` → `0`
+* `status` → `ACTIVE`
 
 ---
 
@@ -145,7 +157,6 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `updatedAt`   | Date                                  | Update timestamp                                   |
 
 **Relations:**
-
 * `userId` → `User` (role = admin)
 * `Admin` can manage multiple users, tenants, properties, and KYCs
 
