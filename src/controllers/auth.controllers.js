@@ -177,14 +177,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, 'User logged out successfully'));
 });
 
-const getCurrentUser = asyncHandler(async (req, res) => {
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, req.user, 'Current user fetched successfully'),
-        );
-});
-
 const verifyEmail = asyncHandler(async (req, res) => {
     const { verificationToken } = req.params;
     if (!verificationToken) {
