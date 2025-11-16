@@ -67,7 +67,8 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 **Default Values:**
 * `status` → `VACANT`
-* `description` → `null` \
+* `description` → `null` 
+* `depositAmount` → `0`
 
 **Methods implemented:**
 * `addIssue(issueData)` → adds a new issue in the issue list.
