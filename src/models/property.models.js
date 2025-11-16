@@ -109,7 +109,6 @@ const propertySchema = new Schema(
         type: {
             type: String,
             enum: AvailablePropertyTypes,
-            default: PropertyTypesEnum.FLAT,
             required: true,
         },
 
@@ -125,7 +124,7 @@ const propertySchema = new Schema(
     },
     { timestamps: true },
 );
-// Virtuals: tenants and payments linked to the property
+
 propertySchema.virtual('tenants', {
     ref: 'Tenant',
     localField: '_id',
@@ -149,15 +148,12 @@ propertySchema.pre('save', async function (next) {
 });
 
 
-// Add Issue
 propertySchema.methods.addIssue = async function (issueData) {
     this.issues.push(issueData);
     await this.save();
     return this;
 };
 
-
-// Resolve Issue
 propertySchema.methods.resolveIssue = async function (issueId) {
     const issue = this.issues.id(issueId);
     if (!issue) return this;
