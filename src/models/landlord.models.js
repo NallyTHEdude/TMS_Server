@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { LandlordStatusEnum, AvailableLandlordStatus } from "../utils/constants.js";
 
 const landlordSchema = new Schema(
     {
@@ -23,6 +24,12 @@ const landlordSchema = new Schema(
         totalProperties: {
             type: Number,
             default: 0
+        },
+
+        status: {
+            type: String,
+            enum: AvailableLandlordStatus,
+            default: LandlordStatusEnum.ACTIVE
         }
     },
     {
