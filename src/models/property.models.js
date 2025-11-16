@@ -1,5 +1,10 @@
 import mongoose, { Schema } from "mongoose";
-import { AvailablePropertyStatus, PropertyStatusEnum, AvailablePropertyTypes,PropertyTypesEnum} from '../utils/constants.js'; 
+import {
+    AvailablePropertyStatus,PropertyStatusEnum,
+    AvailablePropertyTypes,PropertyTypesEnum,
+    IssueTypesEnum, AvailableIssueTypes,
+    AvailableIssuePriority, IssuePriorityEnum
+} from '../utils/constants.js'; 
 
 
 const propertySchema = new Schema(
@@ -23,10 +28,27 @@ const propertySchema = new Schema(
             trim: true
         },
 
-        issues: {
-            type: [String],
-            default: []
-        },
+        issues: [
+            {
+                type: { 
+                    type: String,
+                    enum: AvailableIssueTypes,
+                    default: IssueTypesEnum.OTHER, 
+                    required: true 
+                },
+                description: { 
+                    type: String, 
+                    default: null 
+                },
+                priority: {
+                    type: String,
+                    enum: AvailableIssuePriority,
+                    default: IssuePriorityEnum.LOW,
+                },
+                createdAt: { type: Date, default: Date.now },
+                resolved: { type: Boolean, default: false }
+            }
+        ],
 
         country: {
             type: String,
@@ -105,6 +127,23 @@ propertySchema.pre("save", async function (next) {
     this.status = tenantCount > 0 ? PropertyStatusEnum.OCCUPIED : PropertyStatusEnum.VACANT;
     next();
 });
+
+propertySchema.methods.addIssue = async function (issueData) {
+    this.issues.push(issueData);
+    await this.save();
+    return this;
+};
+
+propertySchema.methods.resolveIssue = async function (issueId) {
+    const issue = this.issues.id(issueId);
+    if(issue){
+        issue.resolved = true;
+        this.markModified("issues");
+        await this.save();
+    }
+    return this;
+};
+
 
 
 const Property = mongoose.model('Property', propertySchema);
