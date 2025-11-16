@@ -119,7 +119,8 @@ const propertySchema = new Schema(
 
         depositAmount: {
             type: Number,
-            required: true,
+            default: 0
+            // required: true,
         },
     },
     { timestamps: true },
@@ -139,13 +140,14 @@ propertySchema.virtual('payments', {
 
 
 // METHODS AND HOOKS
-propertySchema.pre('save', async function (next) {
-    if (!this.isNew) return next();
-    const Tenant = mongoose.model('Tenant');
-    const tenantCount = await Tenant.countDocuments({ propertyId: this._id });
-    this.status = tenantCount > 0 ? PropertyStatusEnum.OCCUPIED : PropertyStatusEnum.VACANT;
-    next();
-});
+// ----------COMMENTING FOR TESTING , UNCOMMENT LATER----------
+// propertySchema.pre('save', async function (next) {
+//     if (!this.isNew) return next();
+//     const Tenant = mongoose.model('Tenant');
+//     const tenantCount = await Tenant.countDocuments({ propertyId: this._id });
+//     this.status = tenantCount > 0 ? PropertyStatusEnum.OCCUPIED : PropertyStatusEnum.VACANT;
+//     next();
+// });
 
 
 propertySchema.methods.addIssue = async function (issueData) {
