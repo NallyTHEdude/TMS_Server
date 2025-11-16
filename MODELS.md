@@ -37,25 +37,25 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ## 🏠 PROPERTY MODEL (`Property`)
 
-| Field           | Type                                                           | Description                                    |
-| --------------- | -------------------------------------------------------------- | ---------------------------------------------- |
-| `id`            | UUID / ObjectId (PK)                                           | Unique identifier for property                 |
-| `status`        | ENUM('vacant', 'occupied', 'under_maintenance', 'inactive')    | Property status                                |
-| `name`          | String                                                         | Property title or name                         |
-| `description`   | String                                                         | Optional property description                  |
-| `issues`        | [Issues-Subdocument]                                           | issue tags by tenants. Eg:['water', 'plumbing']|
-| `country`       | String                                                         | Country name                                   |
-| `state`         | String                                                         | State name                                     |
-| `city`          | String                                                         | City name                                      |
-| `pincode`       | String                                                         | Postal code                                    |
-| `address`       | String                                                         | Full address of property                       |
-<!-- | `location`      | Object `{ type: 'Point', coordinates: [longitude, latitude] }` | GeoJSON field for mapping                      | -->
-| `landlordId`    | FK → `User.id`                                                 | References landlord owning the property        |
-| `type`          | ENUM('apartment', 'villa', 'flat', 'commercial')               | Property type                                  |
-| `rentAmount`    | Number (decimal)                                               | Monthly rent amount                            |
-| `depositAmount` | Number (decimal)                                               | Security deposit amount                        |
-| `createdAt`     | Date                                                           | Creation timestamp                             |
-| `updatedAt`     | Date                                                           | Last updated timestamp                         |
+| Field           | Type                                                        | Description                                    |
+| --------------- | ----------------------------------------------------------- | ---------------------------------------------- |
+| `id`            | UUID / ObjectId (PK)                                        | Unique identifier for property                 |
+| `status`        | ENUM('vacant', 'occupied', 'under_maintenance', 'inactive') | Property status                                |
+| `name`          | String                                                      | Property title or name                         |
+| `description`   | String                                                      | Optional property description                  |
+| `issues`        | [{ name, description, priority, createdAt, resolved }]      | Tenant–reported issues (e.g., water, plumbing) |
+| `country`       | String                                                      | Country name                                   |
+| `state`         | String                                                      | State name                                     |
+| `city`          | String                                                      | City name                                      |
+| `pincode`       | String                                                      | Postal code                                    |
+| `address`       | String                                                      | Full address of property                       |
+| `landlordId`    | FK → `User.id`                                              | References landlord owning the property        |
+| `type`          | ENUM('apartment', 'villa', 'flat', 'commercial')            | Property type                                  |
+| `rentAmount`    | Number (decimal)                                            | Monthly rent amount                            |
+| `depositAmount` | Number (decimal)                                            | Security deposit amount                        |
+| `createdAt`     | Date                                                        | Creation timestamp                             |
+| `updatedAt`     | Date                                                        | Last updated timestamp                         |
+
 
 
 **Relations:**
