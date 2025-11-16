@@ -20,7 +20,7 @@ export const AvailablePropertyTypes = Object.values(PropertyTypesEnum);
 export const PropertyStatusEnum = {
     VACANT: 'vacant',
     OCCUPIED: 'occupied',
-    UNDER_MAINTENANCE: 'under-maintenance',
+    UNDER_MAINTENANCE: 'under_maintenance',
     INACTIVE : 'inactive', // When a landlord wants to pause listing it, or the admin hides it for rule violations or data issues.
 }
 export const AvailablePropertyStatus = Object.values(PropertyStatusEnum);
