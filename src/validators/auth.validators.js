@@ -20,8 +20,8 @@ const userRegisterValidator = () => {
             .trim()
             .notEmpty()
             .withMessage('Password is required')
-            .isLength({ min: 6 })
-            .withMessage('Password must be atleast 8 characters'),
+            .isLength({ min: 4 })
+            .withMessage('Password must be atleast 4 characters'),
 
         body('fullName')
             .optional()
@@ -45,10 +45,8 @@ const userLoginValidator = () => {
             .withMessage('Email is not valid'),
 
         body('username')
-            .optional()
+            .optional({ checkFalsy: true })
             .trim()
-            .notEmpty()
-            .withMessage('Username is required')
             .isLength({ min: 3 })
             .withMessage('Username must be atleast 3 characters'),
 
@@ -56,14 +54,15 @@ const userLoginValidator = () => {
             .trim()
             .notEmpty()
             .withMessage('Password is required')
-            .isLength({ min: 6 })
-            .withMessage('Password must be atleast 8 characters'),
+            .isLength({ min: 4 })
+            .withMessage('Password must be atleast 4 characters'),
 
         body('role')
             .notEmpty()
             .withMessage('Role is required')
     ];
 };
+
 
 const userChangeCurrentPasswordValidator = () => {
     return [
