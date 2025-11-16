@@ -81,10 +81,7 @@ const propertySchema = new Schema(
             type: Number,
             required: true
         }
-    },
-    {
-        timestamps: true
-    }
+    },{ timestamps: true }
 );
 
 // Virtuals: tenants and payments linked to the property
@@ -100,7 +97,16 @@ propertySchema.virtual("payments", {
     foreignField: "propertyId"
 });
 
-// propertySchema.set("toObject", { virtuals: true });
-// propertySchema.set("toJSON", { virtuals: true });
 
-export default mongoose.model("Property", propertySchema);
+// METHODS AND HOOKS
+propertySchema.pre("save", async function (next) {
+    const Tenant = mongoose.model("Tenant");
+    const tenantCount = await Tenant.countDocuments({ propertyId: this._id });
+    this.status = tenantCount > 0 ? PropertyStatusEnum.OCCUPIED : PropertyStatusEnum.VACANT;
+    next();
+});
+
+
+const Property = mongoose.model('Property', propertySchema);
+
+export {Property};
