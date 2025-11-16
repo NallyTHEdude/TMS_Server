@@ -390,7 +390,6 @@ export {
     registerUser,
     login,
     logoutUser,
-    getCurrentUser,
     verifyEmail,
     resendEmailVerification,
     refreshAccessToken,
