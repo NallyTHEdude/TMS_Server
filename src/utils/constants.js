@@ -7,15 +7,8 @@ export const UserRolesEnum = {
 export const AvailableUserRoles = Object.values(UserRolesEnum);
 
 
-export const TaskStatusEnum = {
-    TODO : 'to_do',
-    IN_PROGRESS : 'in_progress',
-    DONE : 'done'
-}
-export const AvailableTaskStatus = Object.values(TaskStatusEnum);
 
-
-//   enum: ["vacant", "occupied", "under-maintenance", "inactive"],
+// PROPERTY ENUMS
 export const PropertyStatusEnum = {
     VACANT: 'vacant',
     OCCUPIED: 'occupied',
@@ -24,8 +17,6 @@ export const PropertyStatusEnum = {
 }
 export const AvailablePropertyStatus = Object.values(PropertyStatusEnum);
 
-
-// enum: ["apartment", "villa", "flat", "commercial"],
 export const PropertyTypesEnum = {
     APARTMENT: 'apartment',
     VILLA: 'villa',
@@ -33,8 +24,6 @@ export const PropertyTypesEnum = {
     COMMERCIAL: 'commercial'
 }
 export const AvailablePropertyTypes = Object.values(PropertyTypesEnum);
-
-// enum: ["electrical", "plumbing", "water", "structural", "appliances", "pest", "internet", "painting", "security", "common_area", "furniture", "kitchen"]
 
 export const IssueTypesEnum = {
     ELECTRICAL: 'electrical',
