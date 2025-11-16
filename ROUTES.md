@@ -49,10 +49,10 @@ These endpoints manage the centralized `User` profile and settings used by all r
 
 | Method   | Endpoint            | Description                             | Status  |
 | -------- | ------------------- | --------------------------------------- | ------- |
-| `GET`    | `/profile` | Get logged-in user's profile            | ✅      |
+| `GET`    | `/profile`          | Get logged-in user's profile            | ✅      |
 | `PATCH`  | `/update-details`   | Update user details (name, phone, etc.) | ✅      |
 | `PATCH`  | `/update-avatar`    | Upload or update profile picture        | ✅      |
-| `DELETE` | `/delete-account`           | Delete own account                      | ✅      |
+| `DELETE` | `/delete-account`   | Delete own account                      | ✅      |
 
 **Role management & notes**
 
@@ -68,12 +68,12 @@ These endpoints manage the centralized `User` profile and settings used by all r
 
 | Method   | Endpoint                  | Description                                              | Status |
 | -------- | ------------------------- | -------------------------------------------------------- | ------ |
-| `POST`   | `/add`                    | Add a new property (auth + landlord role required)       |        |
-| `GET`    | `/all`                    | Get all properties owned by the logged-in landlord       |        |
-| `GET`    | `/:propertyId`            | Get a single property’s details                          |        |
-| `PUT`    | `/:propertyId/update`     | Update property info (owner or admin)                    |        |
-| `POST`   | `/:propertyId/add-issues` | Add issues raised by the logged-in tenant (role: tenant) |        |
-| `DELETE` | `/:propertyId/delete`     | Delete a property (owner or admin)                       |        |
+| `POST`   | `/add`                    | Add a new property (auth + landlord role required)       | ✅     |
+| `GET`    | `/all`                    | Get all properties owned by the logged-in landlord       | ✅     |
+| `GET`    | `/:propertyId`            | Get a single property’s details                          | ✅     |
+| `PUT`    | `/:propertyId/update`     | Update property info (owner or admin)                    | ✅     |
+| `POST`   | `/:propertyId/add-issues` | Add issues raised by the logged-in tenant (role: tenant) | ✅     |
+| `DELETE` | `/:propertyId/delete`     | Delete a property (owner or admin)                       | ✅     |
 
 
 **Priority for MVP:**
@@ -115,7 +115,7 @@ Landlord endpoints are convenience wrappers and landlord-specific views that ope
 
 | Method  | Endpoint                | Description                                                                         | Status |
 | ------- | ----------------------- | ----------------------------------------------------------------------------------- | ------ |
-| `GET`   | `/dashboard`                   | Get logged-in landlord's dashboard (properties, tenants overview, earnings summary) |        |
+| `GET`   | `/dashboard`            | Get logged-in landlord's dashboard (properties, tenants overview, earnings summary) |        |
 | `GET`   | `/properties`           | Get all properties owned by the logged-in landlord (alias for `/properties/all`)    |        |
 | `GET`   | `/tenants/:propertyId`  | Get all tenants for a specific property owned by the landlord                       |        |
 | `GET`   | `/payments/:propertyId` | Get payments/earnings for a property (landlord's view)                              |        |
@@ -123,7 +123,7 @@ Landlord endpoints are convenience wrappers and landlord-specific views that ope
 | `POST`  | `/payouts/initiate`     | Trigger payout transfer to landlord (integration with payment provider)             |        |
 
 **Priority for MVP:**
-`/me`, `/properties`, `/tenants/:propertyId`
+`/properties`, `/tenants/:propertyId`
 
 Notes:
 
