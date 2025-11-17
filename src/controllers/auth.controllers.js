@@ -10,7 +10,8 @@ import {
 } from '../utils/mail.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { AvailableUserRoles } from '../utils/constants.js';
+import { UserRolesEnum, AvailableUserRoles } from '../utils/constants.js';
+import { Tenant } from '../models/tenant.models.js';
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -62,6 +63,12 @@ const registerUser = asyncHandler(async (req, res) => {
         isEmailVerified: false,
     });
 
+    let tenant = null;
+    // if user is tenant, create tenant record
+    if (user.role === UserRolesEnum.TENANT) {
+        tenant = await Tenant.create({ userId: user._id });
+    }
+
     const { unHashedToken, hashedToken, tokenExpiry } =
         user.generateTemporaryToken();
 
@@ -90,7 +97,10 @@ const registerUser = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 201, 
-                { user: createdUser },
+                { 
+                    user: createdUser,
+                    tenant: tenant 
+                },
                 'User registered successfully'
             )
         );
@@ -124,6 +134,10 @@ const login = asyncHandler(async (req, res) => {
     if (!loggedInUser) {
         throw new ApiError(500, 'User registration failed');
     }
+    let tenant= null;
+    if(loggedInUser.role === UserRolesEnum.TENANT){
+        tenant = await Tenant.findOne({ userId: loggedInUser._id });
+    }
 
     const options = {
         httpOnly: true,
@@ -146,7 +160,12 @@ const login = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                { user: loggedInUser, accessToken, refreshToken },
+                { 
+                    user: loggedInUser, 
+                    accessToken, 
+                    refreshToken,
+                    tenant: tenant 
+                },
                 'User logged in successfully',
             ),
         );
