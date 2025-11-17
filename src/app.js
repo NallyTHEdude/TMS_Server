@@ -27,6 +27,7 @@ import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
 import propertyRouter from './routes/property.routes.js';
 import landlordRouter from './routes/landlord.routes.js';
+import tenantRouter from './routes/tenant.routes.js';
 
 // routes
 app.use('/api/v1/health', healthCheckRouter);
@@ -34,6 +35,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/property', propertyRouter);
 app.use('/api/v1/landlord', landlordRouter);
+app.use('/api/v1/tenant', tenantRouter);
 
 app.get('/', (req, res) => {
     res.send('Welcome to BaseCampy');
