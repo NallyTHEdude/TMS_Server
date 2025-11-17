@@ -20,13 +20,13 @@ const tenantSchema = new Schema(
         propertyId: {
             type: Schema.Types.ObjectId,
             ref: "Property",
-            required: true,
+            default: null,
             index: true
         },
 
         rentStartDate: {
             type: Date,
-            required: true
+            // required: true
         },
 
         rentEndDate: {
@@ -60,6 +60,11 @@ const tenantSchema = new Schema(
         kycDocUrl: {
             type: String,
             default: null
+        },
+
+        kycDocPublicId: {
+            type: String,
+            default: null
         }
 
     },
@@ -81,6 +86,10 @@ tenantSchema.virtual("property", {
     foreignField: "_id",
     justOne: true
 });
+
+tenantSchema.set("toJSON", { virtuals: true });
+tenantSchema.set("toObject", { virtuals: true });
+
 
 const Tenant = mongoose.model("Tenant", tenantSchema);
 export { Tenant };
