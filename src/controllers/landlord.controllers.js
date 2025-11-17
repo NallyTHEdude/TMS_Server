@@ -32,5 +32,5 @@ const getAllTenantsOfProperty = asyncHandler(async (req, res, next) => {
 });
 
 export {
-    getTenantsOfProperty 
+    getAllTenantsOfProperty 
 };
