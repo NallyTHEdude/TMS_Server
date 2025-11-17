@@ -96,22 +96,23 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 👥 TENANT MODEL (`Tenant`)
+## 👥 TENANT MODEL (`Tenant`) ✅
 
-| Field           | Type                                    | Description                    |
-| --------------- | --------------------------------------- | ------------------------------ |
-| `id`            | UUID / ObjectId (PK)                    | Unique tenant record           |
-| `userId`        | FK → `User.id`                          | References tenant user record  |
-| `propertyId`    | FK → `Property.id`                      | Linked property ID             |
-| `rentStartDate` | Date                                    | Tenancy start date             |
-| `rentEndDate`   | Date                                    | Tenancy end or renewal date    |
-| `paymentCycle`  | ENUM('monthly', 'quarterly', 'yearly')  | Payment frequency              |
-| `isActive`      | Boolean                                 | Tenant currently active or not |
-| `kycStatus`     | ENUM('pending', 'verified', 'rejected') | Didit KYC verification status  |
-| `kycDocUrl`     | String                                  | KYC document URL               |
-| `status`        | ENUM('active', 'inactive', 'evicted')   | Tenant account/rental status   |
-| `createdAt`     | Date                                    | Creation timestamp             |
-| `updatedAt`     | Date                                    | Update timestamp               |
+| Field           | Type                                    | Description                                     |
+| --------------- | --------------------------------------- | ----------------------------------------------- |
+| `id`            | UUID / ObjectId (PK)                    | Unique tenant record ID                         |
+| `userId`        | FK → `User.id`                          | References the tenant's user account            |
+| `propertyId`    | FK → `Property.id`                      | Property assigned to this tenant                |
+| `rentStartDate` | Date                                    | Date when tenant started renting                |
+| `rentEndDate`   | Date                                    | Expected end date / renewal date                |
+| `isActive`      | Boolean                                 | Whether this tenant is currently renting        |
+| `paymentStatus` | ENUM('paid', 'due', 'overdue')          | Current rent payment status                     |
+| `accountStatus` | ENUM('active', 'inactive', 'evicted')   | Status of the tenant’s account/rental agreement |
+| `kycStatus`     | ENUM('pending', 'verified', 'rejected') | Didit KYC verification status                   |
+| `kycDocUrl`     | String                                  | URL to uploaded KYC document                    |
+| `createdAt`     | Date                                    | Record creation timestamp                       |
+| `updatedAt`     | Date                                    | Last updated timestamp                          |
+
 
 **Relations:**
 * `userId` → `User` (role = tenant)
