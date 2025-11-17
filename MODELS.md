@@ -116,7 +116,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 **Relations:**
 * `userId` → `User` (role = tenant)
-* `propertyId` → `Property`
+* `propertyId` → `null`
 
 ---
 
