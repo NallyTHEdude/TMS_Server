@@ -3,33 +3,36 @@ import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { Property } from '../models/property.models.js';
 
-const getAllTenantsOfProperty = asyncHandler(async (req, res, next) => {
+const getAllTenantsOfProperty = asyncHandler(async (req, res) => {
     const propertyId = req.params.propertyId;
     const landlordId = req.user._id;
+
     const property = await Property.findOne({
         _id: propertyId,
-        landlordId,
-    }).populate({
+        landlordId
+    })
+    .populate({
         path: 'tenants',
         select: '-__v -createdAt -updatedAt',
+        populate: {
+            path: 'user',
+            select: 'fullName username email avatar'
+        }
     });
 
     if (!property) {
-        throw new ApiError(
-            404,
-            'Property not found or does not belong to the landlord',
-        );
+        throw new ApiError(404, 'Property not found or does not belong to the landlord');
     }
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                property.tenants,
-                'Property tenants fetched successfully',
-            ),
-        );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            property.tenants,
+            'Property tenants fetched successfully'
+        )
+    );
 });
+
 
 export {
     getAllTenantsOfProperty 
