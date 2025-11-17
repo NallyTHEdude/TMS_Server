@@ -3,7 +3,7 @@ import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { Property } from '../models/property.models.js';
 
-const getTenantsOfProperty = asyncHandler(async (req, res, next) => {
+const getAllTenantsOfProperty = asyncHandler(async (req, res, next) => {
     const propertyId = req.params.propertyId;
     const landlordId = req.user._id;
     const property = await Property.findOne({
