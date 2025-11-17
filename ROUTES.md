@@ -7,9 +7,9 @@ Additional: **Didit KYC verification**, **WhatsApp payment reminders**
 
 ---
 
-## 🩺 HEALTH ROUTE (`/api/v1/health`)
+## 🩺 HEALTH ROUTE (`/api/v1/health`) ✅
 
-## 🛠️ TEST ROUTE (`/api/v1/`)
+## 🛠️ TEST ROUTE (`/api/v1/`) ✅
 
 ## 🔖 Core concept: single `User` model with roles
 
@@ -116,8 +116,8 @@ Landlord endpoints are convenience wrappers and landlord-specific views that ope
 | Method  | Endpoint                | Description                                                                         | Status |
 | ------- | ----------------------- | ----------------------------------------------------------------------------------- | ------ |
 | `GET`   | `/dashboard`            | Get logged-in landlord's dashboard (properties, tenants overview, earnings summary) |        |
-| `GET`   | `/properties`           | Get all properties owned by the logged-in landlord (alias for `/properties/all`)    |        |
-| `GET`   | `/tenants/:propertyId`  | Get all tenants for a specific property owned by the landlord                       |        |
+| `GET`   | `/properties`           | Get all properties owned by the logged-in landlord (alias for `/properties/all`)    | ✅     |
+| `GET`   | `/tenants/:propertyId`  | Get all tenants for a specific property owned by the landlord                       | ✅     |
 | `GET`   | `/payments/:propertyId` | Get payments/earnings for a property (landlord's view)                              |        |
 | `PATCH` | `/update/:userId`       | Update landlord's public profile / payout details                                   |        |
 | `POST`  | `/payouts/initiate`     | Trigger payout transfer to landlord (integration with payment provider)             |        |
