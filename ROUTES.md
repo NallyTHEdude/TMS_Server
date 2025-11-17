@@ -87,20 +87,20 @@ Data model note: Property stores `landlordId` that references `User.id`.
 
 Tenant endpoints manage tenant-specific actions and tenant records that reference `User`.
 
-| Method   | Endpoint              | Description                                                           | Status |
-| -------- | --------------------- | --------------------------------------------------------------------- | ------ |
-| `POST`   | `/assign`             | Assign a tenant (a `userId`) to a property (create tenant assignment) |        |
-| `GET`    | `/property/:id`       | Get all tenants under a specific property                             |        |
-| `GET`    | `/me`                 | Get property details assigned to the tenant (tenant's view)           |        |
-| `PATCH`  | `/update/:id`         | Update tenant assignment info                                         |        |
-| `DELETE` | `/remove/:id`         | Remove tenant from property (unassign)                                |        |
-| `GET`    | `/kyc-status/:userId` | Get KYC verification status for a tenant (`userId`)                   |        |
-| `POST`   | `/kyc-verify/:userId` | Trigger Didit KYC verification process for a tenant                   |        |
+| Method   | Endpoint                 | Description                                                           | Status |
+| -------- | ------------------------ | --------------------------------------------------------------------- | ------ |
+| `POST`   |`/assign-property/userId` | Assign a tenant (a `userId`) to a property (create tenant assignment) | ✅     |
+| `GET`    | `/property/:propertyId`  | Get all tenants under a specific property                             | ✅     |
+| `GET`    | `/profile`               | Get property details assigned to the tenant (tenant's view)           | ✅     |
+| `PATCH`  | `/update/:tenantId`      | Update tenant assignment info                                         |        |
+| `POST`   | `/remove/:tenantId`      | Remove tenant from property (unassign)                                | ✅     |
+| `GET`    | `/kyc-status/:tenantId`  | Get KYC verification status for a tenant (`userId`)                   | ✅     |
+| `POST`   | `/kyc-verify`            | Trigger Didit KYC verification process for a tenant                   | ✅     |
 
 **Important change:** KYC endpoints are **only for tenants** (tenants are the ones who provide KYC documents). Landlords and admins do not use the tenant KYC endpoints.
 
 **Priority for MVP:**
-`/assign`, `/property/:id`, `/me`, `/kyc-verify/:userId`, `/kyc-status/:userId`
+`/assign-property/userId`, `/property/:propertyId`, `/me`, `/kyc-verify/:tenantId`, `/kyc-status/:tenantId`
 
 Implementation notes:
 
