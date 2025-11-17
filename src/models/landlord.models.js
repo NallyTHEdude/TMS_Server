@@ -43,9 +43,9 @@ landlordSchema.virtual("properties", {
     foreignField: "landlordId"
 });
 
-// Enable When Required
-// landlordSchema.set("toObject", { virtuals: true });
-// landlordSchema.set("toJSON", { virtuals: true });
+
+landlordSchema.set("toObject", { virtuals: true });
+landlordSchema.set("toJSON", { virtuals: true });
 
 const Landlord = mongoose.model("Landlord", landlordSchema);
 export { Landlord };
