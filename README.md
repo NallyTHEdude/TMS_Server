@@ -20,6 +20,9 @@ All technical details are inside the `documentation` folder:
 * **[MODELS.md](documentation/MODELS.md)** – all database models, fields, and relationships
 * **[ROUTES.md](documentation/ROUTES.md)** – complete API route list with methods and descriptions
 
+* ✅ represents that the feature is implimented successfully and tested in postman, empty fields in status represent todo features.
+* PATCH routes from the documentations are interchangable with put routes, **using PUT request instead of PATCH request is highly encouraged**
+
 These two files are the source of truth for anyone contributing to the project.
 
 ---
