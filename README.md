@@ -9,7 +9,7 @@ Backend API for a **landlord–tenant property management system**, built with:
 
 This backend powers features like property management, tenant assignment, issue tracking, KYC verification, and (planned) payment + WhatsApp rent reminders.
 
-**Note:** KYC verification is just a dummy verification for now, as the api's for kyc verification are paid 
+**Note:** KYC verification is just a dummy verification for now, as the api's for kyc verification are paid or require organizational access
 
 ---
 
