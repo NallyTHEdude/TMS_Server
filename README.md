@@ -17,8 +17,8 @@ This backend powers features like property management, tenant assignment, issue 
 
 All technical details are inside the `documentation` folder:
 
-* **`[MODELS.md](documentation/MODELS.md)`** – all database models, fields, and relationships
-* **`[ROUTES.md](documentation/ROUTES.md)`** – complete API route list with methods and descriptions
+* **[MODELS.md](documentation/MODELS.md)** – all database models, fields, and relationships
+* **[ROUTES.md](documentation/ROUTES.md)** – complete API route list with methods and descriptions
 
 These two files are the source of truth for anyone contributing to the project.
 
@@ -174,7 +174,7 @@ GET /api/v1/health
 
 ## 🧭 Development Guidelines
 
-* Update `documentation/MODELS.md` and `documentation/ROUTES.md` whenever you add or modify anything.
+* Update [MODELS.md](documentation/MODELS.md) and [MODELS.md](documentation/ROUTES.md) whenever you add or modify anything.
 * ✅ represents that the feature is implimented successfully and tested in postman, empty fields in status represent todo features.
 * PATCH routes from the documentations are interchangable with put routes, **using PUT request instead of PATCH request is highly encouraged**
 * Use validators for every POST/PATCH route.
