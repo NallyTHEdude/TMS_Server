@@ -2,14 +2,14 @@
 
 Backend API for a **landlord–tenant property management system**, built with:
 
-- **Node.js + Express**
-- **MongoDB + Mongoose**
-- **JWT authentication**
-- Modular MVC structure (controllers, models, routes, middlewares)
+* **Node.js + Express**
+* **MongoDB + Mongoose**
+* **JWT authentication**
+* Modular MVC structure (controllers, models, routes, middlewares)
 
 This backend powers features like property management, tenant assignment, issue tracking, KYC verification, and (planned) payment + WhatsApp rent reminders.
 
-**Note:** KYC verification is just a dummy verification for now, as the api's for kyc verification are paid or require organizational access
+**Note:** KYC verification is just a dummy verification for now, as the APIs for KYC verification are paid or require organizational access.
 
 ---
 
@@ -17,11 +17,15 @@ This backend powers features like property management, tenant assignment, issue 
 
 All technical details are inside the `documentation` folder:
 
-- **[MODELS.md](documentation/MODELS.md)** – all database models, fields, and relationships
-- **[ROUTES.md](documentation/ROUTES.md)** – complete API route list with methods and descriptions
+* **[MODELS.md](documentation/MODELS.md)** – all database models, fields, and relationships
 
-- ✅ represents that the feature is implimented successfully and tested in postman, empty fields in status represent todo features.
-- PATCH routes from the documentations are interchangable with put routes, **using PUT request instead of PATCH request is highly encouraged**
+* **[ROUTES.md](documentation/ROUTES.md)** – complete API route list with methods and descriptions
+
+* ✅ represents that the feature is implemented successfully and tested in Postman.
+
+* Empty fields represent TODO features.
+
+* PATCH routes from the documentation are interchangeable with PUT routes — **using PUT is highly encouraged**.
 
 These two files are the source of truth for anyone contributing to the project.
 
@@ -31,43 +35,42 @@ These two files are the source of truth for anyone contributing to the project.
 
 ### 👤 User Management
 
-- Single `User` model with roles: `tenant`, `landlord`, `admin`
-- JWT auth (access + refresh tokens)
-- Email verification flow
-- Password reset system
-- Profile update + avatar upload
+* Single `User` model with roles: `tenant`, `landlord`, `admin`
+* JWT auth (access + refresh tokens)
+* Email verification flow
+* Password reset system
+* Profile update + avatar upload
 
 ### 🏠 Properties
 
-- Add, update, delete properties (landlords)
-- Each property includes:
-    - Rent, deposit, address
-    - Status (`vacant`, `occupied`, `under_maintenance`, `inactive`)
-    - List of tenant-raised issues
+* Add, update, delete properties (landlords)
+* Rent, deposit, address fields
+* Status: `vacant`, `occupied`, `under_maintenance`, `inactive`
+* List of tenant-raised issues
 
 ### 👨‍💼 Tenant Management
 
-- Assign/unassign tenants to properties
-- Tenant profile linked to property
-- Track rent status, KYC status, and active/inactive status
-- KYC verification endpoints included
+* Assign/unassign tenants
+* Tenant profile linked to property
+* Track rent status, KYC status, active/inactive status
+* KYC verification endpoints included
 
 ### 🧾 Issues (Maintenance)
 
-- Tenants can raise property issues (water, electrical, plumbing, etc.)
-- Track priority + resolution
+* Tenants can raise property issues (water, electrical, plumbing, etc.)
+* Track issue priority + resolution
 
 ### 💰 Payments (Planned)
 
-- Payment initiation + confirmation
-- Rent payment history
-- Automatic monthly WhatsApp reminders
+* Payment initiation + confirmation
+* Rent payment history
+* Automatic monthly WhatsApp reminders
 
 ### 🛠 Admin Tools (Optional)
 
-- View/manage users
-- Approve KYC requests
-- Delete users
+* View/manage users
+* Approve KYC requests
+* Delete users
 
 ---
 
@@ -79,18 +82,18 @@ server/
 │   ├── MODELS.md
 │   └── ROUTES.md
 │
-├── public/                # Static files (if needed)
+├── public/
 ├── src/
-│   ├── controllers/       # Route logic
-│   ├── db/                # MongoDB connection
-│   ├── middlewares/       # Auth, role checks, error handler
-│   ├── models/            # Mongoose schemas
-│   ├── routes/            # Express routes
-│   ├── utils/             # Helpers (tokens, email, etc.)
-│   └── validators/        # Joi/Yup validation schemas
+│   ├── controllers/
+│   ├── db/
+│   ├── middlewares/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   └── validators/
 │
-├── app.js                 # Express app
-├── index.js               # Server entry point
+├── app.js
+├── index.js
 ├── package.json
 ├── .env.example
 └── README.md
@@ -98,7 +101,7 @@ server/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started (Without Docker)
 
 ### 1️⃣ Clone the repository
 
@@ -114,33 +117,10 @@ npm install
 
 ### 3️⃣ Environment Variables
 
-Copy `.env.example` and rename the file as `.env` and fill in the below fields :
+Copy `.env.example` as `.env` and fill all values:
 
-```env
-PORT=
-
-#("https://example.com, http://localhost:3000")
-CORS_ORIGIN=
-
-MONGO_URI=
-
-ACCESS_TOKEN_SECRET=
-ACCESS_TOKEN_EXPIRY=
-
-REFRESH_TOKEN_SECRET=
-REFRESH_TOKEN_EXPIRY=
-
-MAILTRAP_SMTP_HOST=
-MAILTRAP_SMTP_PORT=
-MAILTRAP_SMTP_USERNAME=
-MAILTRAP_SMTP_PASSWORD=
-
-RESET_PASSWORD_REDIRECT_URL=
-
-
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+```bash
+cp .env.example .env
 ```
 
 ### 4️⃣ Run the server
@@ -163,34 +143,92 @@ GET /api/v1/health
 
 ---
 
+## 🐳 Running with Docker
+
+This project includes a production-ready Dockerfile.
+Follow the steps below to build and run the backend inside a Docker container.
+
+### 1️⃣ Create your `.env` file
+
+```bash
+cp .env.example .env
+```
+
+Fill in all required values (MongoDB URI, JWT secrets, Cloudinary keys, etc.).
+
+---
+
+### 2️⃣ Build the Docker image
+
+```bash
+docker build -t tms-server .
+```
+
+---
+
+### 3️⃣ Run the container
+
+```bash
+docker run -p 4000:4000 tms-server
+```
+
+Backend will be available at:
+
+```
+http://localhost:4000
+```
+
+---
+
+### 🔒 (Optional) Run using `.env` safely
+
+```bash
+docker run -p 4000:4000 --env-file .env tms-server
+```
+
+Recommended for real deployments since `.env` is not baked into the image.
+
+---
+
+### 🧹 Useful Docker commands
+
+Stop container:
+
+```bash
+docker stop <container>
+```
+
+Remove container:
+
+```bash
+docker rm <container>
+```
+
+View logs:
+
+```bash
+docker logs <container>
+```
+
+---
+
 ## 🧱 Tech Used
 
-- **Node.js**
-- **Express.js**
-- **MongoDB + Mongoose**
-- JWT authentication
-- Nodemailer (for email)
-- Multer / Cloudinary Cloud storage (for avatars or documents)
+* Node.js
+* Express.js
+* MongoDB + Mongoose
+* JWT authentication
+* Nodemailer
+* Multer + Cloudinary
 
 ---
 
 ## 🧭 Development Guidelines
 
-- Update [MODELS.md](documentation/MODELS.md) and [MODELS.md](documentation/ROUTES.md) whenever you add or modify anything.
-- ✅ represents that the feature is implimented successfully and tested in postman, empty fields in status represent todo features.
-- PATCH routes from the documentations are interchangable with put routes, **using PUT request instead of PATCH request is highly encouraged**
-- Use validators for every POST/PATCH route.
-- Follow role-based middleware for tenant/landlord/admin routes.
-- Avoid mixing business logic inside route files; always use controllers.
-
----
-
-## 🤝 Contributing (For collaborators)
-
-1. Fork repo
-2. Create branch: `git checkout -b feature/my-feature`
-3. Commit: `git commit -m "Add my feature"`
-4. Push: `git push origin feature/my-feature`
-5. Open PR
+* Update MODELS.md and ROUTES.md when adding/modifying features.
+* Use validators for every POST/PATCH route.
+* Use role-based middleware for tenant/landlord/admin routes.
+* Keep controllers separate from route files.
+* PUT is preferred over PATCH in this project.
 
 ---
