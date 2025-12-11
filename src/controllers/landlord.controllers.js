@@ -12,28 +12,25 @@ const getAllActiveTenantsOfProperty = asyncHandler(async (req, res) => {
         propertyId,
         // isActive: true
     })
-    .populate({
-        path: "user",
-        select: "fullName username email avatar"
-    })
-    .select("-__v -updatedAt");
+        .populate({
+            path: 'user',
+            select: 'fullName username email avatar',
+        })
+        .select('-__v -updatedAt');
 
     if (!tenants.length) {
-        throw new ApiError(404, "No active tenants found for this property");
+        throw new ApiError(404, 'No active tenants found for this property');
     }
 
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            tenants,
-            "Active tenants for this property fetched successfully"
-        )
-    );
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                tenants,
+                'Active tenants for this property fetched successfully',
+            ),
+        );
 });
 
-
-
-
-export {
-    getAllActiveTenantsOfProperty 
-};
+export { getAllActiveTenantsOfProperty };

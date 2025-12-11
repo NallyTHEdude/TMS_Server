@@ -30,29 +30,24 @@ const generateAccessAndRefreshTokens = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password, role } = req.body;
 
-    if(!role){
+    if (!role) {
         throw new ApiError(400, 'User role is required');
     }
 
     const normalizedRole = role.toLowerCase();
 
-    if(!AvailableUserRoles.includes(normalizedRole)){
+    if (!AvailableUserRoles.includes(normalizedRole)) {
         throw new ApiError(400, 'Invalid user role');
     }
-
 
     const existingUser = await User.findOne({
         $or: [{ email }, { username }],
     });
-    
+
     // if user already exists, throw error
     if (existingUser) {
-        throw new ApiError(
-            409,
-            'User with email or username already exists',
-        );
+        throw new ApiError(409, 'User with email or username already exists');
     }
-    
 
     // if user does not exist, create new user
     const user = await User.create({
@@ -92,18 +87,16 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, 'User registration failed');
     }
 
-    return res
-        .status(201)
-        .json(
-            new ApiResponse(
-                201, 
-                { 
-                    user: createdUser,
-                    tenant: tenant 
-                },
-                'User registered successfully'
-            )
-        );
+    return res.status(201).json(
+        new ApiResponse(
+            201,
+            {
+                user: createdUser,
+                tenant: tenant,
+            },
+            'User registered successfully',
+        ),
+    );
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -134,8 +127,8 @@ const login = asyncHandler(async (req, res) => {
     if (!loggedInUser) {
         throw new ApiError(500, 'User registration failed');
     }
-    let tenant= null;
-    if(loggedInUser.role === UserRolesEnum.TENANT){
+    let tenant = null;
+    if (loggedInUser.role === UserRolesEnum.TENANT) {
         tenant = await Tenant.findOne({ userId: loggedInUser._id });
     }
 
@@ -160,11 +153,11 @@ const login = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                { 
-                    user: loggedInUser, 
-                    accessToken, 
+                {
+                    user: loggedInUser,
+                    accessToken,
                     refreshToken,
-                    tenant: tenant 
+                    tenant: tenant,
                 },
                 'User logged in successfully',
             ),
@@ -371,7 +364,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
     user.forgotPasswordTokenExpiry = undefined;
     user.forgotPasswordToken = undefined;
-    user.refreshToken = ''
+    user.refreshToken = '';
 
     user.password = newPassword;
     await user.save({ validateBeforeSave: false });

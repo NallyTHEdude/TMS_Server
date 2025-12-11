@@ -1,27 +1,27 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 import {
     TenantPaymentStatusEnum,
     AvailableTenantPaymentStatus,
     TenantStatusEnum,
     AvailableTenantStatus,
     KycStatusEnum,
-    AvailableKycStatus
-} from "../utils/constants.js";
+    AvailableKycStatus,
+} from '../utils/constants.js';
 
 const tenantSchema = new Schema(
     {
         userId: {
             type: Schema.Types.ObjectId,
-            ref: "User",
+            ref: 'User',
             required: true,
-            index: true
+            index: true,
         },
 
         propertyId: {
             type: Schema.Types.ObjectId,
-            ref: "Property",
+            ref: 'Property',
             default: null,
-            index: true
+            index: true,
         },
 
         rentStartDate: {
@@ -31,65 +31,63 @@ const tenantSchema = new Schema(
 
         rentEndDate: {
             type: Date,
-            default: null
+            default: null,
         },
 
         isActive: {
             type: Boolean,
-            default: true
+            default: true,
         },
 
         paymentStatus: {
             type: String,
             enum: AvailableTenantPaymentStatus,
-            default: TenantPaymentStatusEnum.DUE
+            default: TenantPaymentStatusEnum.DUE,
         },
 
         accountStatus: {
             type: String,
             enum: AvailableTenantStatus,
-            default: TenantStatusEnum.ACTIVE
+            default: TenantStatusEnum.ACTIVE,
         },
 
         kycStatus: {
             type: String,
             enum: AvailableKycStatus,
-            default: KycStatusEnum.PENDING
+            default: KycStatusEnum.PENDING,
         },
 
         kycDocUrl: {
             type: String,
-            default: null
+            default: null,
         },
 
         kycDocPublicId: {
             type: String,
-            default: null
-        }
-
+            default: null,
+        },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 // Virtual: populate user details for dashboard
-tenantSchema.virtual("user", {
-    ref: "User",
-    localField: "userId",
-    foreignField: "_id",
-    justOne: true
+tenantSchema.virtual('user', {
+    ref: 'User',
+    localField: 'userId',
+    foreignField: '_id',
+    justOne: true,
 });
 
 // Virtual: populate property details
-tenantSchema.virtual("property", {
-    ref: "Property",
-    localField: "propertyId",
-    foreignField: "_id",
-    justOne: true
+tenantSchema.virtual('property', {
+    ref: 'Property',
+    localField: 'propertyId',
+    foreignField: '_id',
+    justOne: true,
 });
 
-tenantSchema.set("toJSON", { virtuals: true });
-tenantSchema.set("toObject", { virtuals: true });
+tenantSchema.set('toJSON', { virtuals: true });
+tenantSchema.set('toObject', { virtuals: true });
 
-
-const Tenant = mongoose.model("Tenant", tenantSchema);
+const Tenant = mongoose.model('Tenant', tenantSchema);
 export { Tenant };

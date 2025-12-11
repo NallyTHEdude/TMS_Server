@@ -1,14 +1,13 @@
-import Mailgen from "mailgen";
-import nodemailer from "nodemailer";
+import Mailgen from 'mailgen';
+import nodemailer from 'nodemailer';
 
-
-const sendEmail = async (options)=>{
+const sendEmail = async (options) => {
     const mailGenerator = new Mailgen({
-        theme: "default",
+        theme: 'default',
         product: {
-            name: "Task Manager",
-            link: "https://taskmanagelink.com"
-        }
+            name: 'Task Manager',
+            link: 'https://taskmanagelink.com',
+        },
     });
 
     const textEmail = mailGenerator.generatePlaintext(options.mailgenContent);
@@ -21,7 +20,7 @@ const sendEmail = async (options)=>{
         auth: {
             user: process.env.GMAIL_SMTP_USERNAME,
             pass: process.env.GMAIL_APP_PASSWORD,
-        }
+        },
     });
 
     const mail = {
@@ -30,16 +29,15 @@ const sendEmail = async (options)=>{
         subject: options.subject,
         text: textEmail,
         html: htmlEmail,
-    }
+    };
 
-    try{
+    try {
         await transporter.sendMail(mail);
-        console.log("email sent successfully");
-    }catch(error){
-        console.error("email service failed with error: ", error);
+        console.log('email sent successfully');
+    } catch (error) {
+        console.error('email service failed with error: ', error);
     }
-}
-
+};
 
 // ---- AUTH MAIL FORMATS ----
 const emailVerificationMailGenContent = (username, verificationUrl) => {
@@ -56,7 +54,7 @@ const emailVerificationMailGenContent = (username, verificationUrl) => {
                 },
             },
             outro: "Need help, or have questions? just reply to this email, we'd love to help.",
-        }
+        },
     };
 };
 const loginVerificationMailGenContent = (username, logoutUrl) => {
@@ -73,7 +71,7 @@ const loginVerificationMailGenContent = (username, logoutUrl) => {
                 },
             },
             outro: "Need help, or have questions? just reply to this email, we'd love to help.",
-        }
+        },
     };
 };
 
@@ -91,10 +89,9 @@ const forgotPasswordMailGenContent = (username, passwordResetUrl) => {
                 },
             },
             outro: "Need help, or have questions? just reply to this email, we'd love to help.",
-        }
+        },
     };
 };
-
 
 //----USER MAIL FORMATS ----
 const emailChangedMailGenContent = (username, passwordResetUrl, newEmail) => {
@@ -111,26 +108,22 @@ const emailChangedMailGenContent = (username, passwordResetUrl, newEmail) => {
                 },
             },
             outro: "Need help, or have questions? just reply to this email, we'd love to help.",
-        }
+        },
     };
-}
+};
 const accountDeletionMailGenContent = (username) => ({
     body: {
         name: username,
         intro: `Your account has been successfully deleted.`,
-        outro: "We’re sorry to see you go. If you have any feedback or need assistance, feel free to reach out.",
-    }
+        outro: 'We’re sorry to see you go. If you have any feedback or need assistance, feel free to reach out.',
+    },
 });
-
 
 export {
     sendEmail,
-
     emailVerificationMailGenContent,
     loginVerificationMailGenContent,
     forgotPasswordMailGenContent,
-
     emailChangedMailGenContent,
-    accountDeletionMailGenContent
+    accountDeletionMailGenContent,
 };
-

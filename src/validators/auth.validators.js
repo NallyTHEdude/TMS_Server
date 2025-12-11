@@ -28,10 +28,8 @@ const userRegisterValidator = () => {
             .trim()
             .isLength({ min: 3 })
             .withMessage('Full name must be atleast 3 characters'),
-        
-        body('role')
-            .notEmpty()
-            .withMessage('Role is required')
+
+        body('role').notEmpty().withMessage('Role is required'),
     ];
 };
 
@@ -57,12 +55,9 @@ const userLoginValidator = () => {
             .isLength({ min: 4 })
             .withMessage('Password must be atleast 4 characters'),
 
-        body('role')
-            .notEmpty()
-            .withMessage('Role is required')
+        body('role').notEmpty().withMessage('Role is required'),
     ];
 };
-
 
 const userChangeCurrentPasswordValidator = () => {
     return [

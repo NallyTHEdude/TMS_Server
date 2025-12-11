@@ -5,7 +5,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 👤 USER MODEL (`User`)  ✅ 
+## 👤 USER MODEL (`User`) ✅
 
 | Field                       | Type                                    | Description                                     |
 | --------------------------- | --------------------------------------- | ----------------------------------------------- |
@@ -27,18 +27,20 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `updatedAt`                 | Date                                    | Auto-updated timestamp                          |
 
 **Methods implemented:**
-* `comparePassword(password)` → verifies a plain password using bcrypt.
-* `generateAccessToken()` → signs and returns a short-lived JWT.
-* `generateRefreshToken()` → signs and returns a long-lived JWT.
-* `generateTemporaryToken()` → returns `{ unHashedToken, hashedToken, tokenExpiry }` for password reset or email verification.
+
+- `comparePassword(password)` → verifies a plain password using bcrypt.
+- `generateAccessToken()` → signs and returns a short-lived JWT.
+- `generateRefreshToken()` → signs and returns a long-lived JWT.
+- `generateTemporaryToken()` → returns `{ unHashedToken, hashedToken, tokenExpiry }` for password reset or email verification.
 
 **Default Values:**
-* `isEmailVerified` → `false`
-* `avatar` → `https://www.placehold.co/200x200`
+
+- `isEmailVerified` → `false`
+- `avatar` → `https://www.placehold.co/200x200`
 
 ---
 
-## 🏠 PROPERTY MODEL (`Property`) ✅ 
+## 🏠 PROPERTY MODEL (`Property`) ✅
 
 | Field           | Type                                                        | Description                                    |
 | --------------- | ----------------------------------------------------------- | ---------------------------------------------- |
@@ -59,24 +61,25 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `createdAt`     | Date                                                        | Creation timestamp                             |
 | `updatedAt`     | Date                                                        | Last updated timestamp                         |
 
-
-
 **Relations:**
-* `landlordId` → `User` (role = landlord)
-* One property → many tenants and payments
+
+- `landlordId` → `User` (role = landlord)
+- One property → many tenants and payments
 
 **Default Values:**
-* `status` → `VACANT`
-* `description` → `null` 
-* `depositAmount` → `0`
+
+- `status` → `VACANT`
+- `description` → `null`
+- `depositAmount` → `0`
 
 **Methods implemented:**
-* `addIssue(issueData)` → adds a new issue in the issue list.
-* `resolveIssue(issueId)` → marks the issue as resolved and wont be shown.
+
+- `addIssue(issueData)` → adds a new issue in the issue list.
+- `resolveIssue(issueId)` → marks the issue as resolved and wont be shown.
 
 ---
 
-## 🏠 ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`) ✅ 
+## 🏠 ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`) ✅
 
 | Field         | Type                             | Description                                             |
 | ------------- | -------------------------------- | ------------------------------------------------------- |
@@ -89,10 +92,10 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `isResolved`  | Boolean                          | Mark whether the issue has been resolved                |
 
 **Default Values:**
-* `isResolved` → `false`
-* `priority` → `LOW`
-* `createdAt` → `Date.now()`
 
+- `isResolved` → `false`
+- `priority` → `LOW`
+- `createdAt` → `Date.now()`
 
 ---
 
@@ -113,35 +116,37 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `createdAt`     | Date                                    | Record creation timestamp                       |
 | `updatedAt`     | Date                                    | Last updated timestamp                          |
 
-
 **Relations:**
-* `userId` → `User` (role = tenant)
-* `propertyId` → `null`
+
+- `userId` → `User` (role = tenant)
+- `propertyId` → `null`
 
 ---
 
-## 🏛️ LANDLORD MODEL (`Landlord`) ✅ 
+## 🏛️ LANDLORD MODEL (`Landlord`) ✅
 
-| Field             | Type                                                | Description                       |
-| ----------------- | --------------------------------------------------- | --------------------------------- |
-| `id`              | UUID / ObjectId (PK)                                | Landlord record ID                |
-| `userId`          | FK → `User.id`                                      | Linked landlord user              |
-| `businessName`    | String                                              | Optional business or agency name  |
-| `earningsToDate`  | Number                                              | Total accumulated earnings        |
-| `totalProperties` | Number                                              | Property count owned              |
-| `status`          | ENUM('active', 'suspended')                         | Landlord account status           |
-| `createdAt`       | Date                                                | Creation timestamp                |
-| `updatedAt`       | Date                                                | Update timestamp                  |
+| Field             | Type                        | Description                      |
+| ----------------- | --------------------------- | -------------------------------- |
+| `id`              | UUID / ObjectId (PK)        | Landlord record ID               |
+| `userId`          | FK → `User.id`              | Linked landlord user             |
+| `businessName`    | String                      | Optional business or agency name |
+| `earningsToDate`  | Number                      | Total accumulated earnings       |
+| `totalProperties` | Number                      | Property count owned             |
+| `status`          | ENUM('active', 'suspended') | Landlord account status          |
+| `createdAt`       | Date                        | Creation timestamp               |
+| `updatedAt`       | Date                        | Update timestamp                 |
 
 **Relations:**
-* `userId` → `User` (role = landlord)
-* One landlord → many properties
+
+- `userId` → `User` (role = landlord)
+- One landlord → many properties
 
 **Default Values:**
-* `businessName` → `null`
-* `earningsToDate` → `0`
-* `totalProperties` → `0`
-* `status` → `ACTIVE`
+
+- `businessName` → `null`
+- `earningsToDate` → `0`
+- `totalProperties` → `0`
+- `status` → `ACTIVE`
 
 ---
 
@@ -159,8 +164,9 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `updatedAt`   | Date                                  | Update timestamp                                   |
 
 **Relations:**
-* `userId` → `User` (role = admin)
-* `Admin` can manage multiple users, tenants, properties, and KYCs
+
+- `userId` → `User` (role = admin)
+- `Admin` can manage multiple users, tenants, properties, and KYCs
 
 ---
 

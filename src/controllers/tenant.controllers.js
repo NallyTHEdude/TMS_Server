@@ -3,12 +3,17 @@ import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { Property } from '../models/property.models.js';
 import { Tenant } from '../models/tenant.models.js';
-import {User} from '../models/user.models.js';
+import { User } from '../models/user.models.js';
 import {
     uploadOnCloudinary,
     deleteFromCloudinary,
 } from '../utils/cloudinary.js';
-import { KycStatusEnum, TenantStatusEnum, PropertyStatusEnum, UserRolesEnum } from '../utils/constants.js';
+import {
+    KycStatusEnum,
+    TenantStatusEnum,
+    PropertyStatusEnum,
+    UserRolesEnum,
+} from '../utils/constants.js';
 
 // Dummy KYC Verification Function
 const dummyKYCVerification = async (kycDocUrl) => {
@@ -74,14 +79,14 @@ const getTenantDetails = asyncHandler(async (req, res) => {
     // Fetch tenant even if inactive
     const tenant = await Tenant.findOne({ userId })
         .populate({
-            path: "user",
-            select: "fullName username email avatar role"
+            path: 'user',
+            select: 'fullName username email avatar role',
         })
         .populate({
-            path: "property",
-            select: "name description country state city pincode address type rentAmount depositAmount status"
+            path: 'property',
+            select: 'name description country state city pincode address type rentAmount depositAmount status',
         })
-        .select("-__v -updatedAt");
+        .select('-__v -updatedAt');
 
     // CASE 1: No tenant document exists for this user
     if (!tenant) {
@@ -94,14 +99,14 @@ const getTenantDetails = asyncHandler(async (req, res) => {
                         username: req.user.username,
                         email: req.user.email,
                         avatar: req.user.avatar,
-                        role: req.user.role
+                        role: req.user.role,
                     },
                     tenantId: null,
                     tenant: null,
-                    message: "Tenant profile does not exist yet"
+                    message: 'Tenant profile does not exist yet',
                 },
-                "Tenant profile fetched"
-            )
+                'Tenant profile fetched',
+            ),
         );
     }
 
@@ -117,12 +122,12 @@ const getTenantDetails = asyncHandler(async (req, res) => {
                         isActive: tenant.isActive,
                         accountStatus: tenant.accountStatus,
                         rentEndDate: tenant.rentEndDate,
-                        property: null
+                        property: null,
                     },
-                    message: "You are not currently assigned to any property"
+                    message: 'You are not currently assigned to any property',
                 },
-                "Tenant profile fetched"
-            )
+                'Tenant profile fetched',
+            ),
         );
     }
 
@@ -132,14 +137,12 @@ const getTenantDetails = asyncHandler(async (req, res) => {
             200,
             {
                 tenantId: tenant._id,
-                ...tenant.toObject()
+                ...tenant.toObject(),
             },
-            "Tenant details fetched successfully"
-        )
+            'Tenant details fetched successfully',
+        ),
     );
 });
-
-
 
 const assignTenantToProperty = asyncHandler(async (req, res) => {
     const landlordId = req.user._id;
@@ -149,23 +152,29 @@ const assignTenantToProperty = asyncHandler(async (req, res) => {
     // 1. Validate property belongs to landlord
     const property = await Property.findOne({
         _id: propertyId,
-        landlordId
+        landlordId,
     });
 
     if (!property) {
-        throw new ApiError(404, "Property not found or does not belong to the landlord");
+        throw new ApiError(
+            404,
+            'Property not found or does not belong to the landlord',
+        );
     }
 
     // 2. Find tenant document created at registration
     const tenant = await Tenant.findOne({ userId: tenantUserId });
 
     if (!tenant) {
-        throw new ApiError(404, "Tenant profile not found (user is not a tenant)");
+        throw new ApiError(
+            404,
+            'Tenant profile not found (user is not a tenant)',
+        );
     }
 
     // 3. Prevent assigning multiple properties
     if (tenant.isActive && tenant.propertyId) {
-        throw new ApiError(400, "Tenant is already assigned to a property");
+        throw new ApiError(400, 'Tenant is already assigned to a property');
     }
 
     // 4. Assign tenant to property
@@ -181,16 +190,16 @@ const assignTenantToProperty = asyncHandler(async (req, res) => {
     property.status = PropertyStatusEnum.OCCUPIED;
     await property.save();
 
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            tenant,
-            "Tenant assigned to property successfully"
-        )
-    );
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                tenant,
+                'Tenant assigned to property successfully',
+            ),
+        );
 });
-
-
 
 const getAllTenantsOfProperty = asyncHandler(async (req, res) => {
     const propertyId = req.params.propertyId;
@@ -234,7 +243,7 @@ const removeTenantFromProperty = asyncHandler(async (req, res) => {
     // count active tenants for this property
     const activeTenantCount = await Tenant.countDocuments({
         propertyId: property._id,
-        isActive: true
+        isActive: true,
     });
 
     // if this is the last active tenant → make property VACANT
@@ -250,15 +259,16 @@ const removeTenantFromProperty = asyncHandler(async (req, res) => {
     tenant.rentEndDate = new Date();
     await tenant.save();
 
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            { tenant },
-            "Tenant removed from property successfully"
-        )
-    );
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                { tenant },
+                'Tenant removed from property successfully',
+            ),
+        );
 });
-
 
 const getTenantKYCStatus = asyncHandler(async (req, res) => {
     const tenantId = req.params.tenantId;
@@ -283,5 +293,5 @@ export {
     getTenantKYCStatus,
     applyKYCVerification,
     removeTenantFromProperty,
-    getTenantDetails
+    getTenantDetails,
 };

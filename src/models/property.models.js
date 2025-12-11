@@ -119,7 +119,7 @@ const propertySchema = new Schema(
 
         depositAmount: {
             type: Number,
-            default: 0
+            default: 0,
             // required: true,
         },
     },
@@ -138,7 +138,6 @@ propertySchema.virtual('payments', {
     foreignField: 'propertyId',
 });
 
-
 // METHODS AND HOOKS
 // ----------COMMENTING FOR TESTING , UNCOMMENT LATER----------
 // propertySchema.pre('save', async function (next) {
@@ -148,7 +147,6 @@ propertySchema.virtual('payments', {
 //     this.status = tenantCount > 0 ? PropertyStatusEnum.OCCUPIED : PropertyStatusEnum.VACANT;
 //     next();
 // });
-
 
 propertySchema.methods.addIssue = async function (issueData) {
     this.issues.push(issueData);
@@ -164,7 +162,6 @@ propertySchema.methods.resolveIssue = async function (issueId) {
     await this.save();
     return this;
 };
-
 
 const Property = mongoose.model('Property', propertySchema);
 export { Property };

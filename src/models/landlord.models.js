@@ -1,51 +1,53 @@
-import mongoose, { Schema } from "mongoose";
-import { LandlordStatusEnum, AvailableLandlordStatus } from "../utils/constants.js";
+import mongoose, { Schema } from 'mongoose';
+import {
+    LandlordStatusEnum,
+    AvailableLandlordStatus,
+} from '../utils/constants.js';
 
 const landlordSchema = new Schema(
     {
         userId: {
             type: Schema.Types.ObjectId,
-            ref: "User",
+            ref: 'User',
             required: true,
-            index: true
+            index: true,
         },
 
         businessName: {
             type: String,
             trim: true,
-            default: null
+            default: null,
         },
 
         earningsToDate: {
             type: Number,
-            default: 0
+            default: 0,
         },
 
         totalProperties: {
             type: Number,
-            default: 0
+            default: 0,
         },
 
         status: {
             type: String,
             enum: AvailableLandlordStatus,
-            default: LandlordStatusEnum.ACTIVE
-        }
+            default: LandlordStatusEnum.ACTIVE,
+        },
     },
     {
-        timestamps: true
-    }
+        timestamps: true,
+    },
 );
 
-landlordSchema.virtual("properties", {
-    ref: "Property",
-    localField: "_id",
-    foreignField: "landlordId"
+landlordSchema.virtual('properties', {
+    ref: 'Property',
+    localField: '_id',
+    foreignField: 'landlordId',
 });
 
+landlordSchema.set('toObject', { virtuals: true });
+landlordSchema.set('toJSON', { virtuals: true });
 
-landlordSchema.set("toObject", { virtuals: true });
-landlordSchema.set("toJSON", { virtuals: true });
-
-const Landlord = mongoose.model("Landlord", landlordSchema);
+const Landlord = mongoose.model('Landlord', landlordSchema);
 export { Landlord };
