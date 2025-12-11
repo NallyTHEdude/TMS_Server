@@ -38,7 +38,7 @@ app.use('/api/v1/landlord', landlordRouter);
 app.use('/api/v1/tenant', tenantRouter);
 
 app.get('/', (req, res) => {
-    res.send('Welcome to BaseCampy');
+    res.send('Welcome to Tenant Management System API');
 });
 
 export default app;
