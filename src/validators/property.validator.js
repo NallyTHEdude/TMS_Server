@@ -1,8 +1,9 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
     AvailableIssuePriority,
+    AvailablePropertyStatus
 } from '../utils/constants.js';
 
 const propertyDataValidator = () => {
@@ -70,4 +71,60 @@ const issuesDataValidator = () => {
     ];
 };
 
-export { propertyDataValidator, issuesDataValidator };
+const filterPropertiesValidator = () => {
+    return [
+        // ---------- LOCATION ----------
+        query('state')
+            .optional()
+            .isString()
+            .withMessage('State must be a string'),
+
+        query('city')
+            .optional()
+            .isString()
+            .withMessage('City must be a string'),
+
+        // ---------- STATUS ----------
+        query('status')
+            .optional()
+            .isIn(AvailablePropertyStatus)
+            .withMessage(
+                `Status must be one of: ${AvailablePropertyStatus.join(', ')}`,
+            ),
+
+        // ---------- PROPERTY TYPE ----------
+        query('type')
+            .optional()
+            .isIn(AvailablePropertyTypes)
+            .withMessage(
+                `Property type must be one of: ${AvailablePropertyTypes.join(', ')}`,
+            ),
+
+        // ---------- ISSUES ----------
+        query('issue')
+            .optional()
+            .isIn(AvailableIssueTypes)
+            .withMessage(
+                `Issue type must be one of: ${AvailableIssueTypes.join(', ')}`,
+            ),
+
+        // ---------- TENANT NAME ----------
+        query('tenantName')
+            .optional()
+            .isString()
+            .withMessage('Tenant name must be a string'),
+
+        // ---------- RENT RANGE ----------
+        query('minPriceRange')
+            .optional()
+            .isFloat({ min: 0 })
+            .withMessage('minPriceRange must be a positive number'),
+
+        query('maxPriceRange')
+            .optional()
+            .isFloat({ min: 0 })
+            .withMessage('maxPriceRange must be a positive number'),
+    ];
+};
+
+export { propertyDataValidator, issuesDataValidator, filterPropertiesValidator };
