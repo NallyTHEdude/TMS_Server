@@ -74,7 +74,7 @@ const filterProperties = asyncHandler(async (req, res) => {
         propertyMatch.name = { $regex: name, $options: 'i' };
     }
 
-    // PROPERTY TYPE (from constants enum) 
+    // PROPERTY TYPE (from constants enum)
     if (type && AvailablePropertyTypes.includes(type)) {
         propertyMatch.type = type;
     }
@@ -84,7 +84,7 @@ const filterProperties = asyncHandler(async (req, res) => {
         propertyMatch.issues = issue;
     }
 
-    // RENT RANGE 
+    // RENT RANGE
     if (minPriceRange || maxPriceRange) {
         propertyMatch.rentAmount = {};
         if (minPriceRange)
@@ -96,7 +96,7 @@ const filterProperties = asyncHandler(async (req, res) => {
     // APPLY PROPERTY FILTERS
     pipeline.push({ $match: propertyMatch });
 
-    //  FILTER PROPERTIES BY TENANT NAME 
+    //  FILTER PROPERTIES BY TENANT NAME
     if (tenantName) {
         pipeline.push(
             {
@@ -118,13 +118,18 @@ const filterProperties = asyncHandler(async (req, res) => {
             },
             { $unwind: '$user' },
             {
-            $match: {
-                $or: [
-                    { 'user.fullName': { $regex: tenantName, $options: 'i' } },
-                    { 'user.username': { $regex: tenantName } },
-                ],
+                $match: {
+                    $or: [
+                        {
+                            'user.fullName': {
+                                $regex: tenantName,
+                                $options: 'i',
+                            },
+                        },
+                        { 'user.username': { $regex: tenantName } },
+                    ],
+                },
             },
-        }
         );
     }
 

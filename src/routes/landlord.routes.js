@@ -1,10 +1,16 @@
 import { Router } from 'express';
 import verifyJWT from '../middlewares/auth.middleware.js';
-import { propertyDataValidator, filterPropertiesValidator } from '../validators/property.validator.js';
+import {
+    propertyDataValidator,
+    filterPropertiesValidator,
+} from '../validators/property.validator.js';
 import { requireLandlordRole } from '../middlewares/property.middleware.js';
 import { validate } from '../middlewares/validator.middleware.js';
 import { getAllProperties } from '../controllers/property.controllers.js';
-import { getAllActiveTenantsOfProperty, filterProperties } from '../controllers/landlord.controllers.js';
+import {
+    getAllActiveTenantsOfProperty,
+    filterProperties,
+} from '../controllers/landlord.controllers.js';
 
 const router = Router();
 
@@ -24,7 +30,7 @@ router
         requireLandlordRole,
         filterPropertiesValidator(),
         validate,
-        filterProperties
+        filterProperties,
     );
 
 router

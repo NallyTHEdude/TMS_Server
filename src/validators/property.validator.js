@@ -3,7 +3,7 @@ import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
     AvailableIssuePriority,
-    AvailablePropertyStatus
+    AvailablePropertyStatus,
 } from '../utils/constants.js';
 
 const propertyDataValidator = () => {
@@ -127,4 +127,8 @@ const filterPropertiesValidator = () => {
     ];
 };
 
-export { propertyDataValidator, issuesDataValidator, filterPropertiesValidator };
+export {
+    propertyDataValidator,
+    issuesDataValidator,
+    filterPropertiesValidator,
+};
