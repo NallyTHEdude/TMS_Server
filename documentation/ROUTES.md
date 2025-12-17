@@ -90,7 +90,6 @@ Tenant endpoints manage tenant-specific actions and tenant records that referenc
 | `POST`  | `/assign-property/userId` | Assign a tenant (a `userId`) to a property (create tenant assignment) | ✅     |
 | `GET`   | `/property/:propertyId`   | Get all tenants under a specific property                             | ✅     |
 | `GET`   | `/profile`                | Get property details assigned to the tenant (tenant's view)           | ✅     |
-| `PATCH` | `/update/:tenantId`       | Update tenant assignment info                                         |        |
 | `POST`  | `/remove/:tenantId`       | Remove tenant from property (unassign)                                | ✅     |
 | `GET`   | `/kyc-status/:tenantId`   | Get KYC verification status for a tenant (`userId`)                   | ✅     |
 | `POST`  | `/kyc-verify`             | Trigger Didit KYC verification process for a tenant                   | ✅     |
@@ -116,8 +115,8 @@ Landlord endpoints are convenience wrappers and landlord-specific views that ope
 | `GET`   | `/dashboard`            | Get logged-in landlord's dashboard (properties, tenants overview, earnings summary) |        |
 | `GET`   | `/properties`           | Get all properties owned by the logged-in landlord (alias for `/properties/all`)    | ✅     |
 | `GET`   | `/tenants/:propertyId`  | Get all tenants for a specific property owned by the landlord                       | ✅     |
+| `GET`   | `/properties/filter?`   | Get all properties based on selected filters by the landlord                        | ✅     |
 | `GET`   | `/payments/:propertyId` | Get payments/earnings for a property (landlord's view)                              |        |
-| `PATCH` | `/update/:userId`       | Update landlord's public profile / payout details                                   |        |
 | `POST`  | `/payouts/initiate`     | Trigger payout transfer to landlord (integration with payment provider)             |        |
 
 **Priority for MVP:**
