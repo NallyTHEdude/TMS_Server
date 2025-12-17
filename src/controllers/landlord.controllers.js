@@ -54,37 +54,37 @@ const filterProperties = asyncHandler(async (req, res) => {
     const pipeline = [];
     const propertyMatch = {};
 
-    // ---------- STATE (case-insensitive) ----------
+    // STATE (case-insensitive)
     if (state) {
         propertyMatch.state = { $regex: state, $options: 'i' };
     }
 
-    // ---------- CITY (case-insensitive) ----------
+    // CITY (case-insensitive)
     if (city) {
         propertyMatch.city = { $regex: city, $options: 'i' };
     }
 
-    // ---------- STATUS (enum-safe) ----------
+    // PROPERTY STATUS (from constants enum)
     if (status && AvailablePropertyStatus.includes(status)) {
         propertyMatch.status = status;
     }
 
-    // ---------- PROPERTY NAME (case-insensitive) ----------
+    // PROPERTY NAME (case-insensitive)
     if (name) {
         propertyMatch.name = { $regex: name, $options: 'i' };
     }
 
-    // ---------- PROPERTY TYPE (enum-safe) ----------
+    // PROPERTY TYPE (from constants enum) 
     if (type && AvailablePropertyTypes.includes(type)) {
         propertyMatch.type = type;
     }
 
-    // ---------- ISSUES (enum-safe) ----------
+    // ISSUES (from constants enum)
     if (issue && AvailableIssueTypes.includes(issue)) {
         propertyMatch.issues = issue;
     }
 
-    // ---------- RENT RANGE ----------
+    // RENT RANGE 
     if (minPriceRange || maxPriceRange) {
         propertyMatch.rentAmount = {};
         if (minPriceRange)
@@ -93,10 +93,10 @@ const filterProperties = asyncHandler(async (req, res) => {
             propertyMatch.rentAmount.$lte = Number(maxPriceRange);
     }
 
-    // ---------- APPLY PROPERTY FILTERS ----------
+    // APPLY PROPERTY FILTERS
     pipeline.push({ $match: propertyMatch });
 
-    // ---------- TENANT NAME FILTER ----------
+    //  FILTER PROPERTIES BY TENANT NAME 
     if (tenantName) {
         pipeline.push(
             {
@@ -118,10 +118,13 @@ const filterProperties = asyncHandler(async (req, res) => {
             },
             { $unwind: '$user' },
             {
-                $match: {
-                    'user.name': { $regex: tenantName, $options: 'i' },
-                },
+            $match: {
+                $or: [
+                    { 'user.fullName': { $regex: tenantName, $options: 'i' } },
+                    { 'user.username': { $regex: tenantName } },
+                ],
             },
+        }
         );
     }
 
