@@ -11,7 +11,6 @@ import {
 
 const getAllActiveTenantsOfProperty = asyncHandler(async (req, res) => {
     const propertyId = req.params.propertyId;
-    const landlordId = req.user._id;
 
     const tenants = await Tenant.find({
         propertyId,
