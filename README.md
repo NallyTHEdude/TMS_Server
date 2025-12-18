@@ -60,7 +60,7 @@ These two files are the source of truth for anyone contributing to the project.
 - Tenants can raise property issues (water, electrical, plumbing, etc.)
 - Track issue priority + resolution
 
-### 💰 Payments (Planned)
+### 💰 Payments (Optional)
 
 - Payment initiation + confirmation
 - Rent payment history
