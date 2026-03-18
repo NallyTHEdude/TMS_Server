@@ -11,4 +11,7 @@ await connectDB()
 //app listener
 app.listen(PORT, () => {
     logger.info(`Server is running at ${BASE_URL}:${PORT}`);
+    if(config.NODE_ENV !== 'development'){
+        console.log(`Server is running at ${BASE_URL}:${PORT}`);
+    }
 });
