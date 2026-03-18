@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { config } from './config/index.js';
 
 // initializing express application
 const app = express();
@@ -14,7 +15,7 @@ app.use(cookieParser());
 // cors configuration
 app.use(
     cors({
-        origin: process.env.CORS_ORIGIN?.split(',') || 'http://localhost:5173',
+        origin: config.CORS_ORIGIN?.split(',') || `${config.BASE_URL}:${config.PORT}`,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],

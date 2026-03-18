@@ -8,6 +8,7 @@ import {
     loginVerificationMailGenContent,
     forgotPasswordMailGenContent,
 } from '../utils/mail.js';
+import { config } from '../config/index.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { UserRolesEnum, AvailableUserRoles } from '../utils/constants.js';
@@ -273,7 +274,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     try {
         const decodedRefreshToken = jwt.verify(
             incomingRefreshToken,
-            process.env.REFRESH_TOKEN_SECRET,
+            config.REFRESH_TOKEN_SECRET,
         );
         const user = await User.findById(decodedRefreshToken._id);
         if (!user) {
@@ -329,7 +330,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
         subject: 'Password Reset Request',
         mailgenContent: forgotPasswordMailGenContent(
             user.username,
-            `${process.env.RESET_PASSWORD_REDIRECT_URL}/${unHashedToken}`,
+            `${config.RESET_PASSWORD_REDIRECT_URL}/${unHashedToken}`,
         ),
     });
 
@@ -374,7 +375,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     //     subject: 'Password Reset Request',
     //     mailgenContent: forgotPasswordMailGenContent(
     //         user.username,
-    //         `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${resetToken}`,
+    //         `${config.FORGOT_PASSWORD_REDIRECT_URL}/${resetToken}`,
     //     ),
     // });
 

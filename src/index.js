@@ -1,14 +1,10 @@
 import app from './app.js';
-import dotenv from 'dotenv';
+import { config } from './config/index.js';
 import connectDB from './db/index.js';
 
-// configuring dotenv
-dotenv.config({
-    path: './.env',
-});
-
 // initializing express application
-const PORT = process.env.PORT || 3000;
+const PORT = config.PORT;
+const BASE_URL = config.BASE_URL;
 
 connectDB()
     .then(() => {
@@ -21,5 +17,5 @@ connectDB()
 
 //app listener
 app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
+    console.log(`Server is running at ${BASE_URL}:${PORT}`);
 });

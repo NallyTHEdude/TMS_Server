@@ -1,5 +1,6 @@
 import Mailgen from 'mailgen';
 import nodemailer from 'nodemailer';
+import { config } from '../config/index.js';
 
 const sendEmail = async (options) => {
     const mailGenerator = new Mailgen({
@@ -14,17 +15,17 @@ const sendEmail = async (options) => {
     const htmlEmail = mailGenerator.generate(options.mailgenContent);
 
     const transporter = nodemailer.createTransport({
-        host: process.env.GMAIL_SMTP_HOST,
-        port: process.env.GMAIL_SMTP_PORT,
-        secure: process.env.GMAIL_SMTP_PORT == 465,
+        host: config.GMAIL_SMTP_HOST,
+        port: config.GMAIL_SMTP_PORT,
+        secure: config.GMAIL_SMTP_PORT == 465,
         auth: {
-            user: process.env.GMAIL_SMTP_USERNAME,
-            pass: process.env.GMAIL_APP_PASSWORD,
+            user: config.GMAIL_SMTP_USERNAME,
+            pass: config.GMAIL_APP_PASSWORD,
         },
     });
 
     const mail = {
-        from: `Task Manager: ${process.env.GMAIL_USERNAME}`,
+        from: `Task Manager: ${config.GMAIL_USERNAME}`,
         to: options.email,
         subject: options.subject,
         text: textEmail,
