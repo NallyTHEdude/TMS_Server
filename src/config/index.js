@@ -6,6 +6,8 @@ dotenv.config({
 });
 
 export const config = {
+    NODE_ENV: process.env.NODE_ENV || 'development',
+
     PORT : process.env.PORT || 3000,
     BASE_URL : process.env.BASE_URL,
     CORS_ORIGIN : process.env.CORS_ORIGIN,
