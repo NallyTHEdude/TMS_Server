@@ -25,7 +25,7 @@ const prodFormat = winston.format.combine(
   winston.format.json()
 );
 
-// creating logger instance
+// creating logger instance for dev and prod
 export const logger = winston.createLogger({
   level: "info",
   format: isDevEnv ? devFormat : prodFormat,
