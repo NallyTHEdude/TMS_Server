@@ -1,6 +1,7 @@
 import Mailgen from 'mailgen';
 import nodemailer from 'nodemailer';
 import { config } from '../config/index.js';
+import { logger } from './logger.js';
 
 const sendEmail = async (options) => {
     const mailGenerator = new Mailgen({
@@ -34,9 +35,9 @@ const sendEmail = async (options) => {
 
     try {
         await transporter.sendMail(mail);
-        console.log('email sent successfully');
+        logger.info('Email sent successfully');
     } catch (error) {
-        console.error('email service failed with error: ', error);
+        logger.error('email service failed with error: ', error);
     }
 };
 

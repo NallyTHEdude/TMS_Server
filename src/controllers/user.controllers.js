@@ -1,6 +1,7 @@
 import { ApiError } from '../utils/api-error.js';
 import { ApiResponse } from '../utils/api-response.js';
 import { asyncHandler } from '../utils/async-handler.js';
+import { logger } from '../utils/logger.js';
 import {
     sendEmail,
     emailChangedMailGenContent,
@@ -166,7 +167,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         try {
             await deleteFromCloudinary(currentUser.avatar.localPath);
         } catch (err) {
-            console.log('Failed to delete old avatar:', err);
+            logger.error('Failed to delete old avatar ', err);
         }
     }
 
