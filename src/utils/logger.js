@@ -30,7 +30,6 @@ export const logger = winston.createLogger({
   level: "info",
   format: isDevEnv ? devFormat : prodFormat,
   transports: [
-    new winston.transports.Console(),
-    !isDevEnv ? new winston.transports.File({ filename: "logs/app.log" }) : null
+    isDevEnv ? new winston.transports.Console() : new winston.transports.File({ filename: "logs/app.log" })
   ]
 });
