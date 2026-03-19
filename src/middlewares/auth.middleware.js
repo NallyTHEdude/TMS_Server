@@ -3,6 +3,7 @@ import { ApiError } from '../utils/api-error.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import { config } from '../config/index.js';
 import jwt from 'jsonwebtoken';
+import { logger } from '../utils/logger.js';
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
     const accessToken =
@@ -27,6 +28,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
         req.user = user;
         next();
     } catch (err) {
+        logger.error(`Error verifying access token: ${err}`);
         throw new ApiError(401, 'Invalid access token');
     }
 });
