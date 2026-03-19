@@ -6,7 +6,8 @@
     "type": "module",
     "scripts": {
         "dev": "nodemon src/index.js",
-        "start": "node src/index.js"
+        "start": "node src/index.js",
+        "lint": "eslint ."
     },
     "keywords": [
         "backend",
@@ -17,6 +18,9 @@
     "author": "Nawaz",
     "license": "ISC",
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.0.3",
+        "globals": "^17.4.0",
         "nodemon": "^3.1.10",
         "prettier": "3.6.2"
     },
