@@ -2,11 +2,14 @@ import app from './app.js';
 import { config } from './config/index.js';
 import connectDB from './db/index.js';
 import { logger } from './utils/logger.js';
+import { connectRedis } from './utils/redisClient.js';
+
 // initializing express application
 const PORT = config.PORT;
 const BASE_URL = config.BASE_URL;
 
 await connectDB()
+await connectRedis()
 
 //app listener
 app.listen(PORT, () => {
