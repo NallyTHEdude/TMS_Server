@@ -37,9 +37,9 @@ const filterProperties = async (filters) => {
 
 // helper functions
 const validateFilters = (filters) => {
+    // add state, city, name, tenantName, minPriceRange, maxPriceRange validation when required
     const {
-        state, city, status, name, type, issue,
-        tenantName, minPriceRange, maxPriceRange,
+        status, type, issue,
     } = filters;
 
     if(status && !AvailablePropertyStatus.includes(status)) {
@@ -47,11 +47,11 @@ const validateFilters = (filters) => {
         throw new ApiError(400, `Invalid status filter for property`);
     }
     if(type && !AvailablePropertyTypes.includes(type)) {
-        logger.error(`Invalid \'type\' filter, type is: ${type}`);
+        logger.error(`Invalid 'type' filter, type is: ${type}`);
         throw new ApiError(400, `Invalid type filter for property`);
     }
     if(issue && !AvailableIssueTypes.includes(issue)) {
-        logger.error(`Invalid \'issue\' filter, issue is: ${issue}`);
+        logger.error(`Invalid 'issue' filter, issue is: ${issue}`);
         throw new ApiError(400, `Invalid issue filter for property`);
     }
 }
