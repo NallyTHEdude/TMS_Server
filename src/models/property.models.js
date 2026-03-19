@@ -3,8 +3,6 @@ import {
     AvailablePropertyStatus,
     PropertyStatusEnum,
     AvailablePropertyTypes,
-    PropertyTypesEnum,
-    IssueTypesEnum,
     AvailableIssueTypes,
     AvailableIssuePriority,
     IssuePriorityEnum,
