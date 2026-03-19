@@ -150,26 +150,6 @@ Notes:
 
 ---
 
-## 🧾 ADMIN ROUTES (`/api/v1/admin`) (`OPTIONAL FOR MVP)
-
-Admin endpoints operate across users and resources. Admin is a role on the `User` model.
-
-| Method   | Endpoint               | Description                                   | Status |
-| -------- | ---------------------- | --------------------------------------------- | ------ |
-| `GET`    | `/users`               | Get list of all registered users              |        |
-| `GET`    | `/kyc-requests`        | View all pending **tenant** KYC verifications |        |
-| `PATCH`  | `/kyc-approve/:userId` | Approve or reject a tenant's KYC manually     |        |
-| `DELETE` | `/user/:id`            | Delete any user account (moderation)          |        |
-
-**Priority for MVP:**
-`/kyc-requests`, `/kyc-approve/:userId`
-
-Notes:
-
-- Admin endpoints should filter KYC requests specifically for tenants (enforce `role: tenant`).
-
----
-
 ## 🧠 OPTIONAL FUTURE ROUTES
 
 | Method            | Endpoint                                            | Description                                          | Status |

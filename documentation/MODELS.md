@@ -5,7 +5,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 👤 USER MODEL (`User`) ✅
+## USER MODEL (`User`)
 
 | Field                       | Type                                    | Description                                     |
 | --------------------------- | --------------------------------------- | ----------------------------------------------- |
@@ -40,7 +40,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 🏠 PROPERTY MODEL (`Property`) ✅
+## PROPERTY MODEL (`Property`)
 
 | Field           | Type                                                        | Description                                    |
 | --------------- | ----------------------------------------------------------- | ---------------------------------------------- |
@@ -79,7 +79,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 🏠 ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`) ✅
+## ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`) 
 
 | Field         | Type                             | Description                                             |
 | ------------- | -------------------------------- | ------------------------------------------------------- |
@@ -99,7 +99,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 👥 TENANT MODEL (`Tenant`) ✅
+## TENANT MODEL (`Tenant`)
 
 | Field           | Type                                    | Description                                     |
 | --------------- | --------------------------------------- | ----------------------------------------------- |
@@ -123,7 +123,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 🏛️ LANDLORD MODEL (`Landlord`) ✅
+## LANDLORD MODEL (`Landlord`)
 
 | Field             | Type                        | Description                      |
 | ----------------- | --------------------------- | -------------------------------- |
@@ -150,27 +150,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## 🧾 ADMIN MODEL (`Admin`) (`OPTIONAL FOR MVP`)
-
-| Field         | Type                                  | Description                                        |
-| ------------- | ------------------------------------- | -------------------------------------------------- |
-| `id`          | UUID / ObjectId (PK)                  | Admin record ID                                    |
-| `userId`      | FK → `User.id`                        | References user with admin role                    |
-| `permissions` | JSON                                  | Permissions like `manageUsers`, `approveKyc`, etc. |
-| `activityLog` | JSON                                  | Log of admin actions                               |
-| `lastLogin`   | Date                                  | Last login timestamp                               |
-| `status`      | ENUM('active', 'inactive', 'revoked') | Admin account status                               |
-| `createdAt`   | Date                                  | Creation timestamp                                 |
-| `updatedAt`   | Date                                  | Update timestamp                                   |
-
-**Relations:**
-
-- `userId` → `User` (role = admin)
-- `Admin` can manage multiple users, tenants, properties, and KYCs
-
----
-
-### ✅ Summary Table
+### Summary Table
 
 | Model      | Primary Key | References                                     | Status Field                      | Notes                                   |
 | ---------- | ----------- | ---------------------------------------------- | --------------------------------- | --------------------------------------- |
@@ -178,6 +158,4 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `Property` | `id`        | `landlordId → User.id`                         | `vacant / occupied / maintenance` | Landlord-owned property                 |
 | `Tenant`   | `id`        | `userId → User.id`, `propertyId → Property.id` | `active / evicted / inactive`     | Active rental link                      |
 | `Landlord` | `id`        | `userId → User.id`                             | `active / suspended / pending`    | Financial info and properties           |
-| `Admin`    | `id`        | `userId → User.id`                             | `active / revoked`                | Permissions + moderation logs           |
-
 ---
