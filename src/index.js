@@ -2,7 +2,7 @@ import app from './app.js';
 import { config } from './config/index.js';
 import connectDB from './db/index.js';
 import { logger } from './utils/logger.js';
-import { connectRedis } from './utils/redisClient.js';
+import { connectRedis } from './utils/redis.js';
 
 // initializing express application
 const PORT = config.PORT;
