@@ -1,234 +1,279 @@
-# 🏡 Property Management System – Backend
+# Tenant Management System Backend
 
-Backend API for a **landlord–tenant property management system**, built with:
+Production-ready backend API for managing landlords, tenants, properties, and related operations in a multi-role rental workflow.
 
-- **Node.js + Express**
-- **MongoDB + Mongoose**
-- **JWT authentication**
-- Modular MVC structure (controllers, models, routes, middlewares)
+This project is designed for teams building real estate or rental management products that need a clean, scalable backend foundation with practical production concerns already considered: Redis caching support, Dockerized runtime, structured logging, and modular service architecture.
 
-This backend powers features like property management, tenant assignment, issue tracking, KYC verification, and (planned) payment + WhatsApp rent reminders.
+## 1. Project Overview
 
-**Note:** KYC verification is just a dummy verification for now, as the APIs for KYC verification are paid or require organizational access.
+The Tenant Management System backend provides a centralized API for landlord and tenant workflows.
 
----
+It is built for:
+- SaaS products in property and rental management
+- Internal tools for landlords and property managers
+- Backend-first teams that want a maintainable Node.js architecture
 
-## 📘 Documentation
+Core capabilities include:
+- Authentication and token-based access control
+- Role-aware user operations (tenant, landlord, admin)
+- Property and tenant lifecycle management
+- Issue/maintenance tracking flows
+- Media upload support for profile/property assets
+- Caching and containerized deployment support for production environments
 
-All technical details are inside the `documentation` folder:
+## 2. Features
 
-- **[MODELS.md](documentation/MODELS.md)** – all database models, fields, and relationships
+- Tenant, landlord, and user profile management
+- Property CRUD workflows with occupancy and status handling
+- Tenant assignment and unassignment to properties
+- JWT-based authentication with access and refresh tokens
+- Password reset and email-based account actions
+- Input validation pipeline using centralized validators
+- File upload handling with Multer and Cloudinary integration
+- Redis integration for cache-ready service optimization
+- Structured logging with environment-specific transports
+- Docker and Docker Compose support for consistent deployments
+- Health check endpoint for uptime and orchestration probes
 
-- **[ROUTES.md](documentation/ROUTES.md)** – complete API route list with methods and descriptions
+## 3. Tech Stack
 
-- ✅ represents that the feature is implemented successfully and tested in Postman.
+| Layer | Technology |
+|---|---|
+| Backend | Node.js, Express |
+| Database | MongoDB with Mongoose |
+| Caching | Redis (`redis` client) |
+| DevOps | Docker, Docker Compose |
+| Authentication | JWT (`jsonwebtoken`) |
+| Validation | `express-validator` |
+| File Uploads | Multer |
+| Media Storage | Cloudinary |
+| Email | Nodemailer, Mailgen |
+| Logging | Winston |
 
-- Empty fields represent TODO features.
+## 4. Project Structure
 
-- PATCH routes from the documentation are interchangeable with PUT routes — **using PUT is highly encouraged**.
-
-These two files are the source of truth for anyone contributing to the project.
-
----
-
-## ✨ Features
-
-### 👤 User Management
-
-- Single `User` model with roles: `tenant`, `landlord`, `admin`
-- JWT auth (access + refresh tokens)
-- Email verification flow
-- Password reset system
-- Profile update + avatar upload
-
-### 🏠 Properties
-
-- Add, update, delete properties (landlords)
-- Rent, deposit, address fields
-- Status: `vacant`, `occupied`, `under_maintenance`, `inactive`
-- List of tenant-raised issues
-
-### 👨‍💼 Tenant Management
-
-- Assign/unassign tenants
-- Tenant profile linked to property
-- Track rent status, KYC status, active/inactive status
-- KYC verification endpoints included
-
-### 🧾 Issues (Maintenance)
-
-- Tenants can raise property issues (water, electrical, plumbing, etc.)
-- Track issue priority + resolution
-
-### 💰 Payments (Optional)
-
-- Payment initiation + confirmation
-- Rent payment history
-- Automatic monthly WhatsApp reminders
-
-### 🛠 Admin Tools (Optional)
-
-- View/manage users
-- Approve KYC requests
-- Delete users
-
----
-
-## 📁 Project Structure
-
-```
-server/
+```text
+.
 ├── documentation/
-│   ├── MODELS.md
-│   └── ROUTES.md
-│
-├── public/
+│   ├── MODELS.md                # Data model documentation
+│   └── ROUTES.md                # API route documentation
+├── logs/                        # Runtime logs (production logger target)
+├── public/                      # Static assets served by Express
 ├── src/
-│   ├── controllers/
-│   ├── db/
-│   ├── middlewares/
-│   ├── models/
-│   ├── routes/
-│   ├── utils/
-│   └── validators/
-│
-├── app.js
-├── index.js
+│   ├── app.js                   # Express app setup and route mounting
+│   ├── index.js                 # Application bootstrap (DB + Redis + HTTP server)
+│   ├── config/                  # Environment and configuration mapping
+│   ├── controllers/             # HTTP controller handlers
+│   ├── db/                      # Database connection bootstrapping
+│   ├── middlewares/             # Auth, upload, validation, and request middleware
+│   ├── models/                  # Mongoose schemas and models
+│   ├── routes/                  # Versioned API route definitions
+│   ├── services/                # Business logic and orchestration layer
+│   ├── utils/                   # Shared utilities (logger, redis, response wrappers)
+│   └── validators/              # Request validation rules
+├── docker-compose.yml           # Multi-service local/prod-style orchestration
+├── Dockerfile                   # Production image build
 ├── package.json
-├── .env.example
 └── README.md
 ```
 
----
+## 5. Database & System Design
 
-## 🚀 Getting Started (Without Docker)
+### Database Schema Diagram
 
-### 1️⃣ Clone the repository
+<!-- Add your schema diagram here -->
+![Database Schema](documentation/assets/database-schema.png)
+
+### System Architecture Diagram
+
+<!-- Add your system architecture diagram here -->
+![System Architecture](documentation/assets/system-architecture.png)
+
+## 6. Environment Variables
+
+Create a `.env` file in the project root (you can start from `.env.example`).
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `NODE_ENV` | Yes | Runtime mode (`development` or `production`) | `development` |
+| `PORT` | Yes | Port used by the API server | `4000` |
+| `BASE_URL` | Yes | Base server URL used in logs and callbacks | `http://localhost` |
+| `CORS_ORIGIN` | Yes | Allowed CORS origins (comma-separated) | `http://localhost:3000` |
+| `MONGO_URI` | Yes | MongoDB connection string | `mongodb://localhost:27017/tms` |
+| `REDIS_URL` | Recommended | Full Redis URL; preferred for Docker/production | `redis://redis:6379` |
+| `REDIS_HOST` | Conditional | Redis host (used when `REDIS_URL` is not set) | `localhost` |
+| `REDIS_PORT` | Conditional | Redis port (used when `REDIS_URL` is not set) | `6379` |
+| `REDIS_PASSWORD` | Optional | Redis password for secured environments | `your_redis_password` |
+| `ACCESS_TOKEN_SECRET` | Yes | Secret for signing access tokens | `super-secret-access-key` |
+| `ACCESS_TOKEN_EXPIRY` | Yes | Access token expiry duration | `1d` |
+| `REFRESH_TOKEN_SECRET` | Yes | Secret for signing refresh tokens | `super-secret-refresh-key` |
+| `REFRESH_TOKEN_EXPIRY` | Yes | Refresh token expiry duration | `7d` |
+| `GMAIL_SMTP_HOST` | Yes | SMTP host for outgoing mail | `smtp.gmail.com` |
+| `GMAIL_SMTP_PORT` | Yes | SMTP port | `465` |
+| `GMAIL_SMTP_USERNAME` | Yes | SMTP username/email | `your-email@gmail.com` |
+| `GMAIL_APP_PASSWORD` | Yes | App password for SMTP auth | `your-app-password` |
+| `RESET_PASSWORD_REDIRECT_URL` | Yes | Frontend URL for reset-password flow | `http://localhost:3000/reset-password` |
+| `CLOUDINARY_CLOUD_NAME` | Yes | Cloudinary cloud name | `your-cloud-name` |
+| `CLOUDINARY_API_KEY` | Yes | Cloudinary API key | `your-api-key` |
+| `CLOUDINARY_API_SECRET` | Yes | Cloudinary API secret | `your-api-secret` |
+
+Notes:
+- In Docker Compose, set `REDIS_URL=redis://redis:6379` so the app resolves Redis using the Compose service name `redis`.
+- For external Redis providers, use provider-issued TLS URL and credentials.
+
+## 7. Local Development Setup
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/NallyTHEdude/TMS_Server.git
+cd TMS_Server
 ```
 
-### 2️⃣ Install dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Environment Variables
-
-Copy `.env.example` as `.env` and fill all values:
+### 3. Configure environment
 
 ```bash
 cp .env.example .env
 ```
 
-### 4️⃣ Run the server
+Update `.env` with valid MongoDB, Redis, JWT, mail, and Cloudinary values.
+
+### 4. Start development server
 
 ```bash
 npm run dev
 ```
 
-Server will start at:
+The API will run on:
 
-```
+```text
 http://localhost:<PORT>
 ```
 
-Test with:
+## 8. Docker Setup
 
+This project ships with:
+- A `Dockerfile` for building a production image
+- A `docker-compose.yml` that orchestrates the backend app and Redis
+
+### How docker-compose works here
+
+- `app` service: builds and runs the Node.js API container
+- `redis` service: runs Redis (`redis:7-alpine`) on port `6379`
+- `depends_on`: ensures Redis container starts before the app service
+- `env_file`: loads runtime env vars from `.env`
+
+### Service communication details
+
+Within Docker Compose, containers communicate over an internal network using service names as DNS hostnames.
+
+That means your backend should connect to Redis with:
+
+```env
+REDIS_URL=redis://redis:6379
 ```
-GET /api/v1/health
-```
 
----
+Here, `redis` is the service name (not localhost).
 
-## 🐳 Running with Docker
-
-This project includes a production-ready Dockerfile.
-Follow the steps below to build and run the backend inside a Docker container.
-
-### 1️⃣ Create your `.env` file
+### Build and run
 
 ```bash
-cp .env.example .env
-```
-
-Fill in all required values (MongoDB URI, JWT secrets, Cloudinary keys, etc.).
-
----
-
-### 2️⃣ Build the Docker image
-
-```bash
-docker build -t tms-server .
-```
-
----
-
-### 3️⃣ Run the container
-
-```bash
-docker run -p 4000:4000 tms-server
-```
-
-Backend will be available at:
-
-```
-http://localhost:4000
-```
-
----
-
-### 🔒 (Optional) Run using `.env` safely
-
-```bash
-docker run -p 4000:4000 --env-file .env tms-server
-```
-
-Recommended for real deployments since `.env` is not baked into the image.
-
----
-
-### 🧹 Useful Docker commands
-
-Stop container:
-
-```bash
-docker stop <container>
-```
-
-Remove container:
-
-```bash
-docker rm <container>
+docker compose up --build -d
 ```
 
 View logs:
 
 ```bash
-docker logs <container>
+docker compose logs -f app
 ```
 
+Stop services:
+
+```bash
+docker compose down
+```
+
+## 9. API Usage
+
+Example: health check endpoint
+
+### Request
+
+```http
+GET /api/v1/health
+Host: localhost:4000
+```
+
+### Example response
+
+```json
+{
+	"statusCode": 200,
+	"data": {
+		"message": "Server is healthy and is running"
+	},
+	"message": "Success"
+}
+```
+
+You can find full model and route docs in:
+- [documentation/MODELS.md](documentation/MODELS.md)
+- [documentation/ROUTES.md](documentation/ROUTES.md)
+
+## 10. Production Setup
+
+### Environment configuration
+
+- Set `NODE_ENV=production`
+- Use managed services for MongoDB and Redis
+- Inject secrets using your platform secret manager (not hardcoded env files in images)
+
+### Redis strategy (`REDIS_URL`)
+
+- Prefer a single full connection string via `REDIS_URL`
+- Keep `REDIS_HOST`, `REDIS_PORT`, and `REDIS_PASSWORD` as fallback for custom deployments
+- Use password-protected and, when available, TLS-enabled Redis endpoints
+
+### Scaling considerations
+
+- Run multiple API replicas behind a reverse proxy/load balancer
+- Keep API instances stateless (JWT + shared DB/cache already supports this)
+- Tune connection pools for MongoDB and Redis based on traffic
+- Add readiness/liveness probes using `/api/v1/health`
+
+### Logging and error handling
+
+- Winston logger is environment-aware:
+- Development: colored console output
+- Production: structured logs written to `logs/app.log`
+- Centralize logs in your deployment platform (for example, ELK/Datadog/Cloud logging)
+- Ensure unhandled exceptions/rejections are captured and alerted
+
+### Security basics
+
+- Rotate JWT and SMTP credentials regularly
+- Restrict `CORS_ORIGIN` to trusted frontend domains
+- Enforce HTTPS at the edge (reverse proxy / load balancer)
+- Apply rate limiting and request throttling at API gateway or middleware layer
+- Validate and sanitize all request payloads (already aligned with validator middleware usage)
+
+## 11. Future Improvements
+
+- Add comprehensive API documentation with OpenAPI/Swagger
+- Add unit/integration tests and CI pipeline enforcement
+- Add rate limiting and abuse protection middleware
+- Add distributed tracing and metrics dashboards
+- Introduce background job processing for email/reminder workflows
+- Expand payment integration for rent collection lifecycle
+
 ---
 
-## 🧱 Tech Used
-
-- Node.js
-- Express.js
-- MongoDB + Mongoose
-- JWT authentication
-- Nodemailer
-- Multer + Cloudinary
-
----
-
-## 🧭 Development Guidelines
-
-- Update MODELS.md and ROUTES.md when adding/modifying features.
-- Use validators for every POST/PATCH route.
-- Use role-based middleware for tenant/landlord/admin routes.
-- Keep controllers separate from route files.
-- PUT is preferred over PATCH in this project.
-
----
+If you contribute new routes or models, update:
+- [documentation/ROUTES.md](documentation/ROUTES.md)
+- [documentation/MODELS.md](documentation/MODELS.md)
