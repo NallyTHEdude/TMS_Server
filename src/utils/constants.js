@@ -36,7 +36,7 @@ export const IssueTypesEnum = {
     COMMON_AREA: 'common_area', // garbage , lift, parking, corridor-lights, etc
     FURNITURE: 'furniture',
     KITCHEN: 'kitchen', // chimney, sink, etc
-    OTHER: 'other',
+    // OTHER: 'other',
 };
 export const AvailableIssueTypes = Object.values(IssueTypesEnum);
 
