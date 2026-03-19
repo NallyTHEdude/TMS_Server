@@ -1,92 +1,18 @@
-import { User } from '../models/user.models.js';
 import { ApiResponse } from '../utils/api-response.js';
-import { ApiError } from '../utils/api-error.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import {
-    sendEmail,
-    emailVerificationMailGenContent,
-    loginVerificationMailGenContent,
-    forgotPasswordMailGenContent,
-} from '../utils/mail.js';
-import { config } from '../config/index.js';
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
-import { UserRolesEnum, AvailableUserRoles } from '../utils/constants.js';
-import { Tenant } from '../models/tenant.models.js';
-
-const generateAccessAndRefreshTokens = async (userId) => {
-    try {
-        const user = await User.findById(userId);
-        const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
-
-        user.refreshToken = refreshToken;
-        await user.save({ validateBeforeSave: false });
-        return { accessToken, refreshToken };
-    } catch (error) {
-        throw new ApiError(500, 'Failed to generate tokens');
-    }
-};
+import { authService } from '../services/auth.service.js';
 
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password, role } = req.body;
 
-    if (!role) {
-        throw new ApiError(400, 'User role is required');
-    }
-
-    const normalizedRole = role.toLowerCase();
-
-    if (!AvailableUserRoles.includes(normalizedRole)) {
-        throw new ApiError(400, 'Invalid user role');
-    }
-
-    const existingUser = await User.findOne({
-        $or: [{ email }, { username }],
-    });
-
-    // if user already exists, throw error
-    if (existingUser) {
-        throw new ApiError(409, 'User with email or username already exists');
-    }
-
-    // if user does not exist, create new user
-    const user = await User.create({
+    const { createdUser, tenant } = await authService.registerUser({
+        username,
         email,
         password,
-        username,
-        role: normalizedRole,
-        isEmailVerified: false,
+        role,
+        protocol: req.protocol,
+        host: req.get('host'),
     });
-
-    let tenant = null;
-    // if user is tenant, create tenant record
-    if (user.role === UserRolesEnum.TENANT) {
-        tenant = await Tenant.create({ userId: user._id });
-    }
-
-    const { unHashedToken, hashedToken, tokenExpiry } =
-        user.generateTemporaryToken();
-
-    user.emailVerificationToken = hashedToken;
-    user.emailVerificationExpiry = tokenExpiry;
-    await user.save({ validateBeforeSave: false });
-
-    await sendEmail({
-        email: user.email,
-        subject: 'Please verify your email',
-        mailgenContent: emailVerificationMailGenContent(
-            user.username,
-            `${req.protocol}://${req.get('host')}/api/v1/auth/verify-email/${unHashedToken}`,
-        ),
-    });
-
-    const createdUser = await User.findById(user._id).select(
-        '-password -refreshToken -emailVerificationToken -emailVerificationExpiry',
-    );
-    if (!createdUser) {
-        throw new ApiError(500, 'User registration failed');
-    }
 
     return res.status(201).json(
         new ApiResponse(
@@ -101,56 +27,25 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-    const { email, password, username } = req.body;
-    if (!email) {
-        throw new ApiError(400, 'Email is required to login');
-    }
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-
-    if (!user) {
-        throw new ApiError(400, 'User does not exist');
-    }
-
-    const isPasswordValid = await user.comparePassword(password);
-
-    if (!isPasswordValid) {
-        throw new ApiError(400, 'Invalid Password');
-    }
-
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-        user._id,
-    );
-
-    const loggedInUser = await User.findById(user._id).select(
-        '-password -refreshToken -emailVerificationToken -emailVerificationExpiry',
-    );
-    if (!loggedInUser) {
-        throw new ApiError(500, 'User registration failed');
-    }
-    let tenant = null;
-    if (loggedInUser.role === UserRolesEnum.TENANT) {
-        tenant = await Tenant.findOne({ userId: loggedInUser._id });
-    }
-
-    const options = {
-        httpOnly: true,
-        secure: true,
-    };
-
-    await sendEmail({
-        email: user.email,
-        subject: 'Login verification mail',
-        mailgenContent: loginVerificationMailGenContent(
-            user.username,
-            `${req.protocol}://${req.get('host')}/api/v1/auth/logout`,
-        ),
+    const {
+        accessToken,
+        refreshToken,
+        loggedInUser,
+        tenant,
+        cookieOptions,
+    } = await authService.login({
+        email,
+        password,
+        protocol: req.protocol,
+        host: req.get('host'),
     });
 
     return res
         .status(200)
-        .cookie('accessToken', accessToken, options)
-        .cookie('refreshToken', refreshToken, options)
+        .cookie('accessToken', accessToken, cookieOptions)
+        .cookie('refreshToken', refreshToken, cookieOptions)
         .json(
             new ApiResponse(
                 200,
@@ -166,61 +61,27 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-    await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $set: {
-                refreshToken: '',
-            },
-        },
-        {
-            new: true,
-        },
-    );
-
-    const options = {
-        httpOnly: true,
-        secure: true,
-    };
+    const { cookieOptions } = await authService.logoutUser({
+        userId: req.user._id,
+    });
 
     return res
         .status(200)
-        .clearCookie('accessToken', options)
-        .clearCookie('refreshToken', options)
+        .clearCookie('accessToken', cookieOptions)
+        .clearCookie('refreshToken', cookieOptions)
         .json(new ApiResponse(200, {}, 'User logged out successfully'));
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {
-    const { verificationToken } = req.params;
-    if (!verificationToken) {
-        throw new ApiError(400, 'Email verification token is missing');
-    }
-
-    let hashedToken = crypto
-        .createHash('sha256')
-        .update(verificationToken)
-        .digest('hex');
-
-    const user = await User.findOne({
-        emailVerificationToken: hashedToken,
-        emailVerificationExpiry: { $gt: Date.now() },
+    const result = await authService.verifyEmail({
+        verificationToken: req.params.verificationToken,
     });
-
-    if (!user) {
-        throw new ApiError(400, 'Token is invalid or expired');
-    }
-
-    user.emailVerificationToken = undefined;
-    user.emailVerificationExpiry = undefined;
-
-    user.isEmailVerified = true;
-    await user.save({ validateBeforeSave: false });
 
     return res.status(200).json(
         new ApiResponse(
             200,
             {
-                isEmailVerified: true,
+                isEmailVerified: result.isEmailVerified,
             },
             'Email verified successfully',
         ),
@@ -228,29 +89,10 @@ const verifyEmail = asyncHandler(async (req, res) => {
 });
 
 const resendEmailVerification = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        throw new ApiError(404, 'User does not exist');
-    }
-
-    if (user.isEmailVerified) {
-        throw new ApiError(400, 'Email is already verified');
-    }
-
-    const { unHashedToken, hashedToken, tokenExpiry } =
-        user.generateTemporaryToken();
-
-    user.emailVerificationToken = hashedToken;
-    user.emailVerificationExpiry = tokenExpiry;
-    await user.save({ validateBeforeSave: false });
-
-    await sendEmail({
-        email: user.email,
-        subject: 'Please verify your email',
-        mailgenContent: emailVerificationMailGenContent(
-            user.username,
-            `${req.protocol}://${req.get('host')}/api/v1/users/verify-email/${unHashedToken}`,
-        ),
+    await authService.resendEmailVerification({
+        userId: req.user._id,
+        protocol: req.protocol,
+        host: req.get('host'),
     });
 
     return res
@@ -267,72 +109,27 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken =
         req.cookies.refreshToken || req.body.refreshToken;
-    if (!incomingRefreshToken) {
-        throw new ApiError(401, 'Unautorized Access');
-    }
 
-    try {
-        const decodedRefreshToken = jwt.verify(
-            incomingRefreshToken,
-            config.REFRESH_TOKEN_SECRET,
+    const { accessToken, newRefreshToken, cookieOptions } =
+        await authService.refreshAccessToken({ incomingRefreshToken });
+
+    return res
+        .status(200)
+        .cookie('accessToken', accessToken, cookieOptions)
+        .cookie('refreshToken', newRefreshToken, cookieOptions)
+        .json(
+            new ApiResponse(
+                200,
+                { accessToken, refreshToken: newRefreshToken },
+                'Access token refreshed successfully',
+            ),
         );
-        const user = await User.findById(decodedRefreshToken._id);
-        if (!user) {
-            throw new ApiError(401, 'Invalid refresh token');
-        }
-
-        if (user.refreshToken !== incomingRefreshToken) {
-            throw new ApiError(401, 'Refresh token expired');
-        }
-
-        const options = {
-            httpOnly: true,
-            secure: true,
-        };
-
-        const { accessToken, refreshToken: newRefreshToken } =
-            await generateAccessAndRefreshTokens(user._id);
-
-        user.refreshToken = newRefreshToken;
-        await user.save();
-
-        return res
-            .status(200)
-            .cookie('accessToken', accessToken, options)
-            .cookie('refreshToken', newRefreshToken, options)
-            .json(
-                new ApiResponse(
-                    200,
-                    { accessToken, refreshToken: newRefreshToken },
-                    'Access token refreshed successfully',
-                ),
-            );
-    } catch (error) {
-        throw new ApiError(401, 'Invalid refresh token');
-    }
 });
 
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
-        throw new ApiError(404, 'User Not Found');
-    }
-    const { unHashedToken, hashedToken, tokenExpiry } =
-        user.generateTemporaryToken();
-    user.forgotPasswordToken = hashedToken;
-    user.forgotPasswordTokenExpiry = tokenExpiry;
-    await user.save({ validateBeforeSave: false });
 
-    // access the link in email to get unhashed token and reset password
-    await sendEmail({
-        email: user.email,
-        subject: 'Password Reset Request',
-        mailgenContent: forgotPasswordMailGenContent(
-            user.username,
-            `${config.RESET_PASSWORD_REDIRECT_URL}/${unHashedToken}`,
-        ),
-    });
+    await authService.forgotPasswordRequest({ email });
 
     return res
         .status(200)
@@ -349,35 +146,10 @@ const resetPassword = asyncHandler(async (req, res) => {
     const { resetToken } = req.params;
     const { newPassword } = req.body;
 
-    const hashedToken = crypto
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
-
-    const user = await User.findOne({
-        forgotPasswordToken: hashedToken,
-        forgotPasswordTokenExpiry: { $gt: Date.now() },
+    await authService.resetPassword({
+        resetToken,
+        newPassword,
     });
-
-    if (!user) {
-        throw new ApiError(489, 'Token is invalid or expired');
-    }
-
-    user.forgotPasswordTokenExpiry = undefined;
-    user.forgotPasswordToken = undefined;
-    user.refreshToken = '';
-
-    user.password = newPassword;
-    await user.save({ validateBeforeSave: false });
-
-    // await sendEmail({
-    //     email: user.email,
-    //     subject: 'Password Reset Request',
-    //     mailgenContent: forgotPasswordMailGenContent(
-    //         user.username,
-    //         `${config.FORGOT_PASSWORD_REDIRECT_URL}/${resetToken}`,
-    //     ),
-    // });
 
     return res
         .status(200)
@@ -386,13 +158,12 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
-    const user = await User.findById(req.user?._id);
-    const isPasswordValid = await user.comparePassword(oldPassword);
-    if (!isPasswordValid) {
-        throw new ApiError(400, 'Invalid Old Password');
-    }
-    user.password = newPassword;
-    user.save({ validateBeforeSave: false });
+
+    await authService.changeCurrentPassword({
+        userId: req.user?._id,
+        oldPassword,
+        newPassword,
+    });
 
     return res
         .status(200)
