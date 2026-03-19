@@ -14,6 +14,10 @@ export const config = {
 
     MONGO_URI : process.env.MONGO_URI,
 
+    REDIS_URL : process.env.REDIS_URL,
+    REDIS_PORT : process.env.REDIS_PORT,
+    REDIS_PASSWORD : process.env.REDIS_PASSWORD,
+
     ACCESS_TOKEN_SECRET : process.env.ACCESS_TOKEN_SECRET,
     ACCESS_TOKEN_EXPIRY : process.env.ACCESS_TOKEN_EXPIRY,
     REFRESH_TOKEN_SECRET : process.env.REFRESH_TOKEN_SECRET,
