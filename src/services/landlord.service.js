@@ -6,6 +6,7 @@ import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
 } from '../utils/constants.js';
+import { logger } from '../utils/logger.js';
 
 const getActiveTenantsByProperty = async (propertyId)=>{
     const tenants = await Tenant.find({
@@ -19,6 +20,7 @@ const getActiveTenantsByProperty = async (propertyId)=>{
         .select('-__v -updatedAt');
 
     if (!tenants.length) {
+        logger.error(`No tenants found for property with id: ${propertyId}`);
         throw new ApiError(404, 'No active tenants found for this property');
     }
 
@@ -41,12 +43,15 @@ const validateFilters = (filters) => {
     } = filters;
 
     if(status && !AvailablePropertyStatus.includes(status)) {
+        logger.error(`Invalid Status filter, status is: ${status}`);
         throw new ApiError(400, `Invalid status filter for property`);
     }
     if(type && !AvailablePropertyTypes.includes(type)) {
+        logger.error(`Invalid \'type\' filter, type is: ${type}`);
         throw new ApiError(400, `Invalid type filter for property`);
     }
     if(issue && !AvailableIssueTypes.includes(issue)) {
+        logger.error(`Invalid \'issue\' filter, issue is: ${issue}`);
         throw new ApiError(400, `Invalid issue filter for property`);
     }
 }
