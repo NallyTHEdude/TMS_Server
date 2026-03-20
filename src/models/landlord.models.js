@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import {
     LandlordStatusEnum,
     AvailableLandlordStatus,
-} from '../utils/constants.js';
+} from '../utils/constants/landlord.constants.js';
 
 const landlordSchema = new Schema(
     {
