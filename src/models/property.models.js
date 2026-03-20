@@ -6,7 +6,7 @@ import {
     AvailableIssueTypes,
     AvailableIssuePriority,
     IssuePriorityEnum,
-} from '../utils/constants.js';
+} from '../utils/constants/property.constants.js';
 
 const propertySchema = new Schema(
     {
