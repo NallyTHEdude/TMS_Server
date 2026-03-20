@@ -5,7 +5,7 @@ import {
     AvailablePropertyStatus,
     AvailablePropertyTypes,
     AvailableIssueTypes,
-} from '../utils/constants/property.constants.js';
+} from '../constants/property.constants.js';
 import { logger } from '../utils/logger.js';
 
 const getActiveTenantsByProperty = async (propertyId)=>{

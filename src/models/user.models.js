@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { AvailableUserRoles } from '../utils/constants/user.constants.js';
+import { AvailableUserRoles } from '../constants/user.constants.js';
 
 const userSchema = new Schema(
     {

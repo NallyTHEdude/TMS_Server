@@ -6,7 +6,7 @@ import {
     AvailableTenantStatus,
     KycStatusEnum,
     AvailableKycStatus,
-} from '../utils/constants/tenant.constants.js';
+} from '../constants/tenant.constants.js';
 
 const tenantSchema = new Schema(
     {

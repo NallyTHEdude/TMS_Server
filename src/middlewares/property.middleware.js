@@ -1,6 +1,6 @@
 import { ApiError } from '../utils/api-error.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import { UserRolesEnum } from '../utils/constants/user.constants.js';
+import { UserRolesEnum } from '../constants/user.constants.js';
 
 export const requireLandlordRole = asyncHandler(async (req, res, next) => {
     if (

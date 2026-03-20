@@ -8,8 +8,8 @@ import {
 import {
 	KycStatusEnum,
 	TenantStatusEnum,
-} from '../utils/constants/tenant.constants.js';
-import { PropertyStatusEnum } from '../utils/constants/property.constants.js';
+} from '../constants/tenant.constants.js';
+import { PropertyStatusEnum } from '../constants/property.constants.js';
 import { logger } from '../utils/logger.js';
 
 const TENANT_DETAILS_USER_FIELDS = 'fullName username email avatar role';

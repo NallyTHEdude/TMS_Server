@@ -9,7 +9,7 @@ import {
 import { config } from '../config/index.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { UserRolesEnum, AvailableUserRoles } from '../utils/constants/user.constants.js';
+import { UserRolesEnum, AvailableUserRoles } from '../constants/user.constants.js';
 import { Tenant } from '../models/tenant.models.js';
 import { logger } from '../utils/logger.js';
 
