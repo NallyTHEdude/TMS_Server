@@ -4,7 +4,7 @@ import {
     AvailableIssueTypes,
     AvailableIssuePriority,
     AvailablePropertyStatus,
-} from '../utils/constants.js';
+} from '../utils/constants/property.constants.js';
 
 const propertyDataValidator = () => {
     return [
