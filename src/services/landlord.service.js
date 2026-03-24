@@ -6,9 +6,21 @@ import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
 } from '../constants/property.constants.js';
+import { cacheKeys } from '../constants/cache.constants.js';
+import { PluralUserRolesEnum } from '../constants/user.constants.js'
 import { logger } from '../utils/logger.js';
+import { getDataFromRedis } from '../utils/redis.js';
+
 
 const getActiveTenantsByProperty = async (propertyId)=>{
+    // check in cache first
+    const tenantsFromCache = await getDataFromRedis(cacheKeys.PROPERTY(propertyId)+`:${PluralUserRolesEnum.TENANTS}`); 
+    if(tenantsFromCache !== null) {
+        logger.info(`Cache hit for tenants of property with id: ${propertyId}`);
+        return tenantsFromCache;
+    }
+
+    // if not found in cache, fetch from database
     const tenants = await Tenant.find({
         propertyId,
         // isActive: true
