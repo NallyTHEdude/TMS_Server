@@ -6,7 +6,7 @@ import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
 } from '../constants/property.constants.js';
-import { cacheKeys } from '../constants/cache.constants.js';
+import { CacheEntities, CacheIdentifiers } from '../constants/cache.constants.js';
 import { PluralUserRolesEnum } from '../constants/user.constants.js'
 import { logger } from '../utils/logger.js';
 import { getDataFromRedis } from '../utils/redis.js';
@@ -14,7 +14,7 @@ import { getDataFromRedis } from '../utils/redis.js';
 
 const getActiveTenantsByProperty = async (propertyId)=>{
     // check in cache first
-    const tenantsFromCache = await getDataFromRedis(cacheKeys.PROPERTY(propertyId)+`:${PluralUserRolesEnum.TENANTS}`); 
+    const tenantsFromCache = await getDataFromRedis(`${CacheEntities.TENANT}:${CacheIdentifiers.GET_ACTIVE_TENANTS_BY_PROPERTY(propertyId)}`); 
     if(tenantsFromCache !== null) {
         logger.info(`Cache hit for tenants of property with id: ${propertyId}`);
         return tenantsFromCache;
