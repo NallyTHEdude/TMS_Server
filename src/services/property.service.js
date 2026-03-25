@@ -52,6 +52,13 @@ const getAllProperties = async ({ landlordId }) => {
 };
 
 const getOneProperty = async ({ landlordId, propertyId }) => {
+	// check in cache first
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ONE_PROPERTY(propertyId)}`;
+	const propertyFromCache = await getDataFromRedis(cachePropertyKey);
+	if(propertyFromCache !== null) {
+		return propertyFromCache;
+	}
+	// if not found in cache, fetch from database
 	const property = await Property.findOne({
 		_id: propertyId,
 		landlordId,
