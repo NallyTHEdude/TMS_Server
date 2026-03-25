@@ -40,6 +40,8 @@ const landlordSchema = new Schema(
     },
 );
 
+landlordSchema.index({ userId: 1 }, { unique: true });
+
 landlordSchema.virtual('properties', {
     ref: 'Property',
     localField: '_id',

@@ -70,6 +70,9 @@ const tenantSchema = new Schema(
     { timestamps: true },
 );
 
+tenantSchema.index({ userId: 1 }, { unique: true });
+tenantSchema.index({ propertyId: 1, isActive: 1 });
+
 // Virtual: populate user details for dashboard
 tenantSchema.virtual('user', {
     ref: 'User',
