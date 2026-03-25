@@ -11,6 +11,8 @@ import {
 } from '../constants/tenant.constants.js';
 import { PropertyStatusEnum } from '../constants/property.constants.js';
 import { logger } from '../utils/logger.js';
+import { CacheEntities, CacheIdentifiers } from '../constants/cache.constants.js';
+import { getDataFromRedis } from '../utils/redis.js';
 
 const TENANT_DETAILS_USER_FIELDS = 'fullName username email avatar role';
 const TENANT_DETAILS_PROPERTY_FIELDS =
@@ -56,6 +58,14 @@ const applyKYCVerification = async ({ userId, kycDocLocalPath }) => {
 };
 
 const getTenantDetails = async ({ currentUser }) => {
+	// check in cache first
+	const cacheTenantKey = `${CacheEntities.TENANT}:${CacheIdentifiers.GET_ONE_TENANT(currentUser._id)}`;
+	const tenantFromCache = await getDataFromRedis(cacheTenantKey);
+	if(tenantFromCache !== null) {
+		return tenantFromCache;
+	}
+	
+	// if not found in cache, fetch from database
 	const tenant = await Tenant.findOne({ userId: currentUser._id })
 		.populate({
 			path: 'user',
