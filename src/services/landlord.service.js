@@ -14,7 +14,8 @@ import { getDataFromRedis } from '../utils/redis.js';
 
 const getActiveTenantsByProperty = async (propertyId)=>{
     // check in cache first
-    const tenantsFromCache = await getDataFromRedis(`${CacheEntities.TENANT}:${CacheIdentifiers.GET_ACTIVE_TENANTS_BY_PROPERTY(propertyId)}`); 
+    const tenantsCacheKey = `${CacheEntities.TENANT}:${CacheIdentifiers.GET_ACTIVE_TENANTS_BY_PROPERTY(propertyId)}`;
+    const tenantsFromCache = await getDataFromRedis(tenantsCacheKey); 
     if(tenantsFromCache !== null) {
         logger.info(`Cache hit for tenants of property with id: ${propertyId}`);
         return tenantsFromCache;
