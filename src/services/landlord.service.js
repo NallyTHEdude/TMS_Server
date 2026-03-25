@@ -17,7 +17,6 @@ const getActiveTenantsByProperty = async (propertyId)=>{
     const tenantsCacheKey = `${CacheEntities.TENANT}:${CacheIdentifiers.GET_ACTIVE_TENANTS_BY_PROPERTY(propertyId)}`;
     const tenantsFromCache = await getDataFromRedis(tenantsCacheKey); 
     if(tenantsFromCache !== null) {
-        logger.info(`Cache hit for tenants of property with id: ${propertyId}`);
         return tenantsFromCache;
     }
 
