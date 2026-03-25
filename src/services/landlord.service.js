@@ -6,10 +6,9 @@ import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
 } from '../constants/property.constants.js';
-import { CacheEntities, CacheIdentifiers } from '../constants/cache.constants.js';
-import { PluralUserRolesEnum } from '../constants/user.constants.js'
+import { CacheEntities, CacheIdentifiers , CacheTTL} from '../constants/cache.constants.js';
 import { logger } from '../utils/logger.js';
-import { getDataFromRedis } from '../utils/redis.js';
+import { getDataFromRedis, deleteDataFromRedis } from '../utils/redis.js';
 
 
 const getActiveTenantsByProperty = async (propertyId)=>{
@@ -35,6 +34,8 @@ const getActiveTenantsByProperty = async (propertyId)=>{
         logger.error(`No tenants found for property with id: ${propertyId}`);
         throw new ApiError(404, 'No active tenants found for this property');
     }
+
+    await setDataToRedis(tenantsCacheKey, tenants, CacheTTL.TENANT_TTL);
 
     return tenants;
 }
