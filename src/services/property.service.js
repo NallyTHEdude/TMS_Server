@@ -1,6 +1,8 @@
 import { ApiError } from '../utils/api-error.js';
 import { Property } from '../models/property.models.js';
 import { logger } from '../utils/logger.js';
+import { getDataFromRedis } from '../utils/redis.js';
+import { CacheEntities, CacheIdentifiers } from '../constants/cache.constants.js';
 const PROPERTY_SAFE_FIELDS = '-landlordId -updatedAt -__v';
 const PROPERTY_SAFE_FIELDS_WITH_LEADING_SPACE = ' -landlordId -updatedAt -__v';
 
@@ -35,6 +37,13 @@ const addProperty = async ({
 };
 
 const getAllProperties = async ({ landlordId }) => {
+	// check in cache first
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ALL_PROPERTIES(landlordId)}`;
+	const propertiesFromCache = await getDataFromRedis(cachePropertyKey);
+	if(propertiesFromCache !== null) {
+		return propertiesFromCache;
+	}
+	// if not found in cache, fetch from database
 	const properties = await Property.find({
 		landlordId,
 	}).select(PROPERTY_SAFE_FIELDS);
