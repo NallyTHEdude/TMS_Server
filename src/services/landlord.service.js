@@ -8,7 +8,7 @@ import {
 } from '../constants/property.constants.js';
 import { CacheEntities, CacheIdentifiers , CacheTTL} from '../constants/cache.constants.js';
 import { logger } from '../utils/logger.js';
-import { getDataFromRedis, deleteDataFromRedis } from '../utils/redis.js';
+import { getDataFromRedis, setDataToRedis } from '../utils/redis.js';
 
 
 const getActiveTenantsByProperty = async (propertyId)=>{
