@@ -21,5 +21,6 @@ export const CacheIdentifiers = {
     GET_ALL_LANDLORDS: (id)=> `getAllLandlords:${id}`,
     GET_ONE_LANDLORD: (id)=> `getOneLandlord:${id}`,
     GET_ACTIVE_TENANTS_BY_PROPERTY: (id)=> `getActiveTenantsByProperty:${id}`,
+    GET_ALL_TENANTS_OF_PROPERTY: (id)=> `getAllTenantsOfProperty:${id}`,
 }
 export const CacheIdentifiersEnum = Object.values(CacheIdentifiers);
