@@ -89,6 +89,79 @@ Core capabilities include:
 <!-- Add your system architecture diagram here -->
 ![System Architecture](documentation/assets/system-architecture.png)
 
+## 5.1 Redis Caching Strategy
+
+This backend uses Redis as a performance layer on top of MongoDB for high-read endpoints.
+
+### Why Redis is used here
+
+- Reduce repeated database reads for frequently requested resources
+- Improve response latency for dashboard and list-style endpoints
+- Offload query pressure from MongoDB under concurrent traffic
+- Keep the API stateless and horizontally scalable with shared cache
+
+### Strategy used in this project
+
+The project follows a cache-aside pattern:
+
+1. Read request checks Redis first
+2. On cache miss, data is fetched from MongoDB
+3. Fresh data is written to Redis with TTL
+4. Write/update/delete flows explicitly invalidate impacted keys
+
+This is implemented through utility methods in `src/utils/redis.js` and key builders in `src/constants/cache.constants.js`.
+
+### Key pattern used
+
+Keys are namespaced and built as:
+
+`<entity>:<identifier>:<id>`
+
+Examples from the current codebase:
+
+- `tenant:getOneTenant:<userId>`
+- `tenant:getAllTenants:<propertyId>`
+- `tenant:getActiveTenantsByProperty:<propertyId>`
+- `property:getOneProperty:<propertyId>`
+- `property:getAllProperties:<landlordId>`
+- `landlord:getOneLandlord:<landlordId>`
+- `landlord:getAllLandlords:<adminId>`
+
+Entity prefixes come from `CacheEntities` and operation/id segments come from `CacheIdentifiers`.
+
+### TTL policy
+
+- `TENANT_TTL = 3600` seconds
+- `PROPERTY_TTL = 3600` seconds
+- `LANDLORD_TTL = 3600` seconds
+
+Current policy is a uniform 1-hour TTL per entity group (defined in `CacheTTL`).
+
+### Cache invalidation pattern
+
+Invalidation is done on mutation paths using `deleteDataFromRedis(key)`.
+
+Current behavior includes:
+
+- Property mutations invalidate property detail and/or property list keys
+- Tenant assignment/removal invalidates tenant detail and property-tenant list keys
+- Tenant KYC updates invalidate cached tenant detail
+
+This gives a dual protection model:
+
+- Active invalidation on writes for immediate consistency
+- TTL expiry as a fallback cleanup mechanism
+
+### Redis availability behavior
+
+If Redis is unavailable or not ready:
+
+- Reads return `null` and continue to MongoDB
+- Writes/deletes are skipped with warning logs
+- API continues operating (degraded mode) without hard-failing user requests
+
+This keeps reliability high while still benefiting from caching when Redis is healthy.
+
 ## 6. Environment Variables
 
 Create a `.env` file in the project root (you can start from `.env.example`).
