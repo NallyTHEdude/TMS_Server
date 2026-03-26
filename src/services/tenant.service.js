@@ -11,10 +11,18 @@ import {
 } from '../constants/tenant.constants.js';
 import { PropertyStatusEnum } from '../constants/property.constants.js';
 import { logger } from '../utils/logger.js';
+import { CacheEntities, CacheIdentifiers, CacheTTL } from '../constants/cache.constants.js';
+import { getDataFromRedis, setDataToRedis, deleteDataFromRedis } from '../utils/redis.js';
 
 const TENANT_DETAILS_USER_FIELDS = 'fullName username email avatar role';
 const TENANT_DETAILS_PROPERTY_FIELDS =
 	'name description country state city pincode address type rentAmount depositAmount status';
+
+const getSingleTenantCacheKeyByUserId = (userId) =>
+	`${CacheEntities.TENANT}:${CacheIdentifiers.GET_ONE_TENANT(userId)}`;
+
+const getAllTenantsOfPropertyCacheKey = (propertyId) =>
+	`${CacheEntities.TENANT}:${CacheIdentifiers.GET_ALL_TENANTS(propertyId)}`;
 
 
 const applyKYCVerification = async ({ userId, kycDocLocalPath }) => {
@@ -47,6 +55,8 @@ const applyKYCVerification = async ({ userId, kycDocLocalPath }) => {
 
 	await tenant.save();
 
+	await deleteDataFromRedis(getSingleTenantCacheKeyByUserId(userId));
+
 	return {
 		kycStatus: tenant.kycStatus,
 		message: isKYCVerified
@@ -56,29 +66,43 @@ const applyKYCVerification = async ({ userId, kycDocLocalPath }) => {
 };
 
 const getTenantDetails = async ({ currentUser }) => {
-	const tenant = await Tenant.findOne({ userId: currentUser._id })
-		.populate({
-			path: 'user',
-			select: TENANT_DETAILS_USER_FIELDS,
-		})
-		.populate({
-			path: 'property',
-			select: TENANT_DETAILS_PROPERTY_FIELDS,
-		})
-		.select('-__v -updatedAt');
+    // check in cache first
+	const cacheTenantKey = getSingleTenantCacheKeyByUserId(currentUser._id);
+    const tenantFromCache = await getDataFromRedis(cacheTenantKey);
+    if (tenantFromCache !== null) {
+        return tenantFromCache;
+    }
 
-	// CASE 1: No tenant document exists for this user
-	if (!tenant) {
-		return buildTenantDetailsWhenProfileMissing(currentUser);
-	}
+    // if not found in cache, fetch from database
+    const tenant = await Tenant.findOne({ userId: currentUser._id })
+        .populate({
+            path: 'user',
+            select: TENANT_DETAILS_USER_FIELDS,
+        })
+        .populate({
+            path: 'property',
+            select: TENANT_DETAILS_PROPERTY_FIELDS,
+        })
+        .select('-__v -updatedAt');
 
-	// CASE 2: Tenant exists but is inactive (evicted or not assigned)
-	if (!tenant.isActive || !tenant.property) {
-		return buildTenantDetailsWhenNotAssigned(tenant);
-	}
+    // CASE 1: No tenant document exists for this user
+    if (!tenant) {
+        const missingDetails = buildTenantDetailsWhenProfileMissing(currentUser);
+        await setDataToRedis(cacheTenantKey, missingDetails, CacheTTL.TENANT_TTL);
+        return missingDetails;
+    }
 
-	// CASE 3: Tenant exists + active + assigned to property
-	return buildTenantDetailsWhenAssigned(tenant);
+    // CASE 2: Tenant exists but is inactive (evicted or not assigned)
+    if (!tenant.isActive || !tenant.property) {
+        const notAssignedDetails = buildTenantDetailsWhenNotAssigned(tenant);
+        await setDataToRedis(cacheTenantKey, notAssignedDetails, CacheTTL.TENANT_TTL);
+        return notAssignedDetails;
+    }
+
+    // CASE 3: Tenant exists + active + assigned to property
+    const assignedDetails = buildTenantDetailsWhenAssigned(tenant);
+    await setDataToRedis(cacheTenantKey, assignedDetails, CacheTTL.TENANT_TTL);
+    return assignedDetails;
 };
 
 const assignTenantToProperty = async ({
@@ -114,52 +138,72 @@ const assignTenantToProperty = async ({
 	property.status = PropertyStatusEnum.OCCUPIED;
 	await property.save();
 
+	await deleteDataFromRedis(getSingleTenantCacheKeyByUserId(tenant.userId));
+	await deleteDataFromRedis(getAllTenantsOfPropertyCacheKey(propertyId));
+
 	return tenant;
 };
 
 const getAllTenantsOfProperty = async ({ propertyId }) => {
-	const property = await Property.findOne({
-		_id: propertyId,
-	}).populate({
-		path: 'tenants',
-		select: '-__v -createdAt -updatedAt',
-		populate: {
-			path: 'user',
-			select: 'fullName username email avatar',
-		},
-	});
+    // check cache first
+	const tenantsCacheKey = getAllTenantsOfPropertyCacheKey(propertyId);
+    const tenantsFromCache = await getDataFromRedis(tenantsCacheKey);
+    if (tenantsFromCache !== null) {
+        return tenantsFromCache;
+    }
 
-	ensurePropertyExists(property);
+    // if not found in cache, fetch from database
+    const property = await Property.findOne({
+        _id: propertyId,
+    }).populate({
+        path: 'tenants',
+        select: '-__v -createdAt -updatedAt',
+        populate: {
+            path: 'user',
+            select: 'fullName username email avatar',
+        },
+    });
 
-	return property.tenants;
+    ensurePropertyExists(property);
+
+    const tenants = property.tenants;
+    await setDataToRedis(tenantsCacheKey, tenants, CacheTTL.TENANT_TTL);
+    return tenants;
 };
 
 const removeTenantFromProperty = async ({ tenantId }) => {
-	const tenant = await Tenant.findById(tenantId);
-	ensureTenantExists(tenant, tenantId);
+    const tenant = await Tenant.findById(tenantId);
+    ensureTenantExists(tenant, tenantId);
 
-	const property = await Property.findById(tenant.propertyId);
+    const property = await Property.findById(tenant.propertyId);
+	ensurePropertyExists(property);
 
-	// count active tenants for this property
-	const activeTenantCount = await Tenant.countDocuments({
-		propertyId: property._id,
-		isActive: true,
-	});
+    // count active tenants for this property
+    const activeTenantCount = await Tenant.countDocuments({
+        propertyId: property._id,
+        isActive: true,
+    });
 
-	// if this is the last active tenant -> make property VACANT
-	if (activeTenantCount === 1) {
-		property.status = PropertyStatusEnum.VACANT;
-		await property.save();
-	}
+    // if this is the last active tenant -> make property VACANT
+    if (activeTenantCount === 1) {
+        property.status = PropertyStatusEnum.VACANT;
+        await property.save();
+    }
 
-	// disconnect tenant from property
-	tenant.propertyId = null;
-	tenant.accountStatus = TenantStatusEnum.EVICTED;
-	tenant.isActive = false;
-	tenant.rentEndDate = new Date();
-	await tenant.save();
+    // disconnect tenant from property
+    tenant.propertyId = null;
+    tenant.accountStatus = TenantStatusEnum.EVICTED;
+    tenant.isActive = false;
+    tenant.rentEndDate = new Date();
+    await tenant.save();
 
-	return tenant;
+    // invalidate cache
+	const cacheTenantKey = getSingleTenantCacheKeyByUserId(tenant.userId);
+    await deleteDataFromRedis(cacheTenantKey);
+	const tenantsCacheKey = getAllTenantsOfPropertyCacheKey(property._id);
+    await deleteDataFromRedis(tenantsCacheKey);
+
+    return tenant;
 };
 
 const getTenantKYCStatus = async ({ tenantId }) => {

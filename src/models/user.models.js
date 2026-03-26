@@ -66,6 +66,9 @@ const userSchema = new Schema(
     { timestamps: true },
 );
 
+userSchema.index({ emailVerificationToken: 1, emailVerificationExpiry: 1 });
+userSchema.index({ forgotPasswordToken: 1, forgotPasswordTokenExpiry: 1 });
+
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         return next();

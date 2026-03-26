@@ -124,6 +124,8 @@ const propertySchema = new Schema(
     { timestamps: true },
 );
 
+propertySchema.index({ landlordId: 1, status: 1, type: 1, rentAmount: 1 });
+
 propertySchema.virtual('tenants', {
     ref: 'Tenant',
     localField: '_id',

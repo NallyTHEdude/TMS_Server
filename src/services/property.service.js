@@ -1,8 +1,9 @@
 import { ApiError } from '../utils/api-error.js';
 import { Property } from '../models/property.models.js';
 import { logger } from '../utils/logger.js';
-const PROPERTY_SAFE_FIELDS = '-landlordId -updatedAt -__v';
-const PROPERTY_SAFE_FIELDS_WITH_LEADING_SPACE = ' -landlordId -updatedAt -__v';
+import { deleteDataFromRedis, getDataFromRedis, setDataToRedis } from '../utils/redis.js';
+import { CacheEntities, CacheIdentifiers , CacheTTL} from '../constants/cache.constants.js';
+const PROPERTY_SAFE_FIELDS = '-updatedAt -__v';
 
 
 const addProperty = async ({
@@ -31,24 +32,47 @@ const addProperty = async ({
 		landlordId,
 	});
 
+	
+	// invalidate / delete cache
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ALL_PROPERTIES(landlordId)}`;
+	await deleteDataFromRedis(cachePropertyKey);
+
 	return newProperty;
 };
 
 const getAllProperties = async ({ landlordId }) => {
+	// check in cache first
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ALL_PROPERTIES(landlordId)}`;
+	const propertiesFromCache = await getDataFromRedis(cachePropertyKey);
+	if(propertiesFromCache !== null) {
+		return propertiesFromCache;
+	}
+
+	// if not found in cache, fetch from database
 	const properties = await Property.find({
 		landlordId,
 	}).select(PROPERTY_SAFE_FIELDS);
+
+	await setDataToRedis(cachePropertyKey, properties, CacheTTL.PROPERTY_TTL);
 
 	return properties;
 };
 
 const getOneProperty = async ({ landlordId, propertyId }) => {
+	// check in cache first
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ONE_PROPERTY(propertyId)}`;
+	const propertyFromCache = await getDataFromRedis(cachePropertyKey);
+	if(propertyFromCache !== null) {
+		return propertyFromCache;
+	}
+	// if not found in cache, fetch from database
 	const property = await Property.findOne({
 		_id: propertyId,
 		landlordId,
-	}).select(PROPERTY_SAFE_FIELDS_WITH_LEADING_SPACE);
+	}).select(PROPERTY_SAFE_FIELDS);
 
 	ensurePropertyExists(property);
+	await setDataToRedis(cachePropertyKey, property, CacheTTL.PROPERTY_TTL);
 
 	return property;
 };
@@ -64,6 +88,11 @@ const updateProperty = async ({ landlordId, propertyId, body }) => {
 
 	ensurePropertyExists(property);
 
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ONE_PROPERTY(propertyId)}`;
+	await deleteDataFromRedis(cachePropertyKey);
+	const cacheAllPropertiesKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ALL_PROPERTIES(landlordId)}`;
+	await deleteDataFromRedis(cacheAllPropertiesKey);
+
 	return property;
 };
 
@@ -73,9 +102,16 @@ const addIssuesToProperty = async ({ tenantId, propertyId, issuesPayload }) => {
 
 	const issues = normalizeIssuesPayload(issuesPayload);
 	const formattedIssues = formatIssues({ issues, tenantId });
+	
+	const landlordId = property.landlordId.toString();
 
 	property.issues.push(...formattedIssues);
 	await property.save();
+
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ONE_PROPERTY(propertyId)}`;
+	await deleteDataFromRedis(cachePropertyKey);
+	const cacheAllPropertiesKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ALL_PROPERTIES(landlordId)}`;
+	await deleteDataFromRedis(cacheAllPropertiesKey);
 
 	return property;
 };
@@ -93,6 +129,11 @@ const deleteProperty = async ({ landlordId, propertyId, confirmation }) => {
 	});
 
 	await property.deleteOne();
+
+	const cachePropertyKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ONE_PROPERTY(propertyId)}`;
+	await deleteDataFromRedis(cachePropertyKey);
+	const cacheAllPropertiesKey = `${CacheEntities.PROPERTY}:${CacheIdentifiers.GET_ALL_PROPERTIES(landlordId)}`;
+	await deleteDataFromRedis(cacheAllPropertiesKey);
 
 	return property;
 };

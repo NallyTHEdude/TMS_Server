@@ -10,7 +10,6 @@ import {
     deleteFromCloudinary,
 } from '../utils/cloudinary.js';
 import { User } from '../models/user.models.js';
-
 const USER_SAFE_FIELDS =
     '-password -refreshToken -forgotPasswordToken -forgotPasswordTokenExpiry -emailVerificationToken -emailVerificationExpiry';
 

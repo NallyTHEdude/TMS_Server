@@ -6,9 +6,20 @@ import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
 } from '../constants/property.constants.js';
+import { CacheEntities, CacheIdentifiers , CacheTTL} from '../constants/cache.constants.js';
 import { logger } from '../utils/logger.js';
+import { getDataFromRedis, setDataToRedis } from '../utils/redis.js';
+
 
 const getActiveTenantsByProperty = async (propertyId)=>{
+    // check in cache first
+    const tenantsCacheKey = `${CacheEntities.TENANT}:${CacheIdentifiers.GET_ACTIVE_TENANTS_BY_PROPERTY(propertyId)}`;
+    const tenantsFromCache = await getDataFromRedis(tenantsCacheKey); 
+    if(tenantsFromCache !== null) {
+        return tenantsFromCache;
+    }
+
+    // if not found in cache, fetch from database
     const tenants = await Tenant.find({
         propertyId,
         // isActive: true
@@ -23,6 +34,8 @@ const getActiveTenantsByProperty = async (propertyId)=>{
         logger.error(`No tenants found for property with id: ${propertyId}`);
         throw new ApiError(404, 'No active tenants found for this property');
     }
+
+    await setDataToRedis(tenantsCacheKey, tenants, CacheTTL.TENANT_TTL);
 
     return tenants;
 }
