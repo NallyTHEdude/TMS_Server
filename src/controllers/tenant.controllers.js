@@ -24,9 +24,9 @@ const getTenantDetails = asyncHandler(async (req, res) => {
         currentUser: req.user,
     });
 
-    return res.status(200).json(
-        new ApiResponse(200, result.data, result.message),
-    );
+    return res
+        .status(200)
+        .json(new ApiResponse(200, result.data, result.message));
 });
 
 const assignTenantToProperty = asyncHandler(async (req, res) => {

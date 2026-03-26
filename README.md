@@ -9,11 +9,13 @@ This project is designed for teams building real estate or rental management pro
 The Tenant Management System backend provides a centralized API for landlord and tenant workflows.
 
 It is built for:
+
 - SaaS products in property and rental management
 - Internal tools for landlords and property managers
 - Backend-first teams that want a maintainable Node.js architecture
 
 Core capabilities include:
+
 - Authentication and token-based access control
 - Role-aware user operations (tenant, landlord, admin)
 - Property and tenant lifecycle management
@@ -37,18 +39,18 @@ Core capabilities include:
 
 ## 3. Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Node.js, Express |
-| Database | MongoDB with Mongoose |
-| Caching | Redis (`redis` client) |
-| DevOps | Docker, Docker Compose |
-| Authentication | JWT (`jsonwebtoken`) |
-| Validation | `express-validator` |
-| File Uploads | Multer |
-| Media Storage | Cloudinary |
-| Email | Nodemailer, Mailgen |
-| Logging | Winston |
+| Layer          | Technology             |
+| -------------- | ---------------------- |
+| Backend        | Node.js, Express       |
+| Database       | MongoDB with Mongoose  |
+| Caching        | Redis (`redis` client) |
+| DevOps         | Docker, Docker Compose |
+| Authentication | JWT (`jsonwebtoken`)   |
+| Validation     | `express-validator`    |
+| File Uploads   | Multer                 |
+| Media Storage  | Cloudinary             |
+| Email          | Nodemailer, Mailgen    |
+| Logging        | Winston                |
 
 ## 4. Project Structure
 
@@ -82,11 +84,13 @@ Core capabilities include:
 ### Database Schema Diagram
 
 <!-- Add your schema diagram here -->
+
 ![Database Schema](documentation/assets/database-schema.png)
 
 ### System Architecture Diagram
 
 <!-- Add your system architecture diagram here -->
+
 ![System Architecture](documentation/assets/system-architecture.png)
 
 ## 5.1 Redis Caching Strategy
@@ -166,31 +170,32 @@ This keeps reliability high while still benefiting from caching when Redis is he
 
 Create a `.env` file in the project root (you can start from `.env.example`).
 
-| Variable | Required | Description | Example |
-|---|---|---|---|
-| `NODE_ENV` | Yes | Runtime mode (`development` or `production`) | `development` |
-| `PORT` | Yes | Port used by the API server | `4000` |
-| `BASE_URL` | Yes | Base server URL used in logs and callbacks | `http://localhost` |
-| `CORS_ORIGIN` | Yes | Allowed CORS origins (comma-separated) | `http://localhost:3000` |
-| `MONGO_URI` | Yes | MongoDB connection string | `mongodb://localhost:27017/tms` |
-| `REDIS_URL` | Recommended | Full Redis URL; preferred for Docker/production | `redis://redis:6379` |
-| `REDIS_HOST` | Conditional | Redis host (used when `REDIS_URL` is not set) | `localhost` |
-| `REDIS_PORT` | Conditional | Redis port (used when `REDIS_URL` is not set) | `6379` |
-| `REDIS_PASSWORD` | Optional | Redis password for secured environments | `your_redis_password` |
-| `ACCESS_TOKEN_SECRET` | Yes | Secret for signing access tokens | `super-secret-access-key` |
-| `ACCESS_TOKEN_EXPIRY` | Yes | Access token expiry duration | `1d` |
-| `REFRESH_TOKEN_SECRET` | Yes | Secret for signing refresh tokens | `super-secret-refresh-key` |
-| `REFRESH_TOKEN_EXPIRY` | Yes | Refresh token expiry duration | `7d` |
-| `GMAIL_SMTP_HOST` | Yes | SMTP host for outgoing mail | `smtp.gmail.com` |
-| `GMAIL_SMTP_PORT` | Yes | SMTP port | `465` |
-| `GMAIL_SMTP_USERNAME` | Yes | SMTP username/email | `your-email@gmail.com` |
-| `GMAIL_APP_PASSWORD` | Yes | App password for SMTP auth | `your-app-password` |
-| `RESET_PASSWORD_REDIRECT_URL` | Yes | Frontend URL for reset-password flow | `http://localhost:3000/reset-password` |
-| `CLOUDINARY_CLOUD_NAME` | Yes | Cloudinary cloud name | `your-cloud-name` |
-| `CLOUDINARY_API_KEY` | Yes | Cloudinary API key | `your-api-key` |
-| `CLOUDINARY_API_SECRET` | Yes | Cloudinary API secret | `your-api-secret` |
+| Variable                      | Required    | Description                                     | Example                                |
+| ----------------------------- | ----------- | ----------------------------------------------- | -------------------------------------- |
+| `NODE_ENV`                    | Yes         | Runtime mode (`development` or `production`)    | `development`                          |
+| `PORT`                        | Yes         | Port used by the API server                     | `4000`                                 |
+| `BASE_URL`                    | Yes         | Base server URL used in logs and callbacks      | `http://localhost`                     |
+| `CORS_ORIGIN`                 | Yes         | Allowed CORS origins (comma-separated)          | `http://localhost:3000`                |
+| `MONGO_URI`                   | Yes         | MongoDB connection string                       | `mongodb://localhost:27017/tms`        |
+| `REDIS_URL`                   | Recommended | Full Redis URL; preferred for Docker/production | `redis://redis:6379`                   |
+| `REDIS_HOST`                  | Conditional | Redis host (used when `REDIS_URL` is not set)   | `localhost`                            |
+| `REDIS_PORT`                  | Conditional | Redis port (used when `REDIS_URL` is not set)   | `6379`                                 |
+| `REDIS_PASSWORD`              | Optional    | Redis password for secured environments         | `your_redis_password`                  |
+| `ACCESS_TOKEN_SECRET`         | Yes         | Secret for signing access tokens                | `super-secret-access-key`              |
+| `ACCESS_TOKEN_EXPIRY`         | Yes         | Access token expiry duration                    | `1d`                                   |
+| `REFRESH_TOKEN_SECRET`        | Yes         | Secret for signing refresh tokens               | `super-secret-refresh-key`             |
+| `REFRESH_TOKEN_EXPIRY`        | Yes         | Refresh token expiry duration                   | `7d`                                   |
+| `GMAIL_SMTP_HOST`             | Yes         | SMTP host for outgoing mail                     | `smtp.gmail.com`                       |
+| `GMAIL_SMTP_PORT`             | Yes         | SMTP port                                       | `465`                                  |
+| `GMAIL_SMTP_USERNAME`         | Yes         | SMTP username/email                             | `your-email@gmail.com`                 |
+| `GMAIL_APP_PASSWORD`          | Yes         | App password for SMTP auth                      | `your-app-password`                    |
+| `RESET_PASSWORD_REDIRECT_URL` | Yes         | Frontend URL for reset-password flow            | `http://localhost:3000/reset-password` |
+| `CLOUDINARY_CLOUD_NAME`       | Yes         | Cloudinary cloud name                           | `your-cloud-name`                      |
+| `CLOUDINARY_API_KEY`          | Yes         | Cloudinary API key                              | `your-api-key`                         |
+| `CLOUDINARY_API_SECRET`       | Yes         | Cloudinary API secret                           | `your-api-secret`                      |
 
 Notes:
+
 - In Docker Compose, set `REDIS_URL=redis://redis:6379` so the app resolves Redis using the Compose service name `redis`.
 - For external Redis providers, use provider-issued TLS URL and credentials.
 
@@ -232,6 +237,7 @@ http://localhost:<PORT>
 ## 8. Docker Setup
 
 This project ships with:
+
 - A `Dockerfile` for building a production image
 - A `docker-compose.yml` that orchestrates the backend app and Redis
 
@@ -287,15 +293,16 @@ Host: localhost:4000
 
 ```json
 {
-	"statusCode": 200,
-	"data": {
-		"message": "Server is healthy and is running"
-	},
-	"message": "Success"
+    "statusCode": 200,
+    "data": {
+        "message": "Server is healthy and is running"
+    },
+    "message": "Success"
 }
 ```
 
 You can find full model and route docs in:
+
 - [documentation/MODELS.md](documentation/MODELS.md)
 - [documentation/ROUTES.md](documentation/ROUTES.md)
 
@@ -348,5 +355,6 @@ You can find full model and route docs in:
 ---
 
 If you contribute new routes or models, update:
+
 - [documentation/ROUTES.md](documentation/ROUTES.md)
 - [documentation/MODELS.md](documentation/MODELS.md)

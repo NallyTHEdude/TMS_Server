@@ -9,23 +9,22 @@ const redisClient = createClient({
 });
 
 // redis client event handlers
-redisClient.on('error', err => {
+redisClient.on('error', (err) => {
     logger.error('Redis Client Error: ', err);
 });
 
 redisClient.on('connect', () => {
-    logger.info('Redis connecting...')
-})
+    logger.info('Redis connecting...');
+});
 
 redisClient.on('ready', () => {
-    logger.info('Redis is ready')
-})
-
+    logger.info('Redis is ready');
+});
 
 // redis client functions
 const connectRedis = async () => {
     try {
-        if(redisClient.isOpen) return 
+        if (redisClient.isOpen) return;
         await redisClient.connect();
     } catch (err) {
         logger.error('Failed to connect to Redis: ', err);
@@ -34,11 +33,15 @@ const connectRedis = async () => {
 
 const setDataToRedis = async (key, value, expiryInSeconds = 3600) => {
     try {
-        if(!redisClient.isReady){
-            logger.warn(`Redis client is not ready. Skipping cache set for key: ${key}`);
+        if (!redisClient.isReady) {
+            logger.warn(
+                `Redis client is not ready. Skipping cache set for key: ${key}`,
+            );
             return;
         }
-        await redisClient.set(key, JSON.stringify(value), { EX: expiryInSeconds });
+        await redisClient.set(key, JSON.stringify(value), {
+            EX: expiryInSeconds,
+        });
     } catch (err) {
         logger.error('Failed to set data to Redis: ', err);
     }
@@ -46,13 +49,13 @@ const setDataToRedis = async (key, value, expiryInSeconds = 3600) => {
 
 const getDataFromRedis = async (key) => {
     try {
-        if(!redisClient.isReady){
+        if (!redisClient.isReady) {
             logger.warn('Redis client is not ready. Skipping cache retrieval.');
             return null;
         }
         const data = await redisClient.get(key);
 
-        if(data){
+        if (data) {
             logger.info(`Cache hit for key: ${key}`);
             return JSON.parse(data);
         }
@@ -67,8 +70,10 @@ const getDataFromRedis = async (key) => {
 
 const deleteDataFromRedis = async (key) => {
     try {
-        if(!redisClient.isReady){
-            logger.warn(`Redis client is not ready. Skipping cache deletion for key: ${key}`);
+        if (!redisClient.isReady) {
+            logger.warn(
+                `Redis client is not ready. Skipping cache deletion for key: ${key}`,
+            );
             return;
         }
         await redisClient.del(key);
@@ -77,9 +82,4 @@ const deleteDataFromRedis = async (key) => {
     }
 };
 
-export {
-    connectRedis,
-    setDataToRedis,
-    getDataFromRedis,
-    deleteDataFromRedis,
-}
+export { connectRedis, setDataToRedis, getDataFromRedis, deleteDataFromRedis };

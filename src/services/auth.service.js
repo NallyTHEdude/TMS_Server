@@ -9,15 +9,24 @@ import {
 import { config } from '../config/index.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { UserRolesEnum, AvailableUserRoles } from '../constants/user.constants.js';
+import {
+    UserRolesEnum,
+    AvailableUserRoles,
+} from '../constants/user.constants.js';
 import { Tenant } from '../models/tenant.models.js';
 import { logger } from '../utils/logger.js';
 
 const USER_SAFE_FIELDS =
     '-password -refreshToken -emailVerificationToken -emailVerificationExpiry';
 
-
-const registerUser = async ({ username, email, password, role, protocol, host }) => {
+const registerUser = async ({
+    username,
+    email,
+    password,
+    role,
+    protocol,
+    host,
+}) => {
     const normalizedRole = validateRole(role);
 
     const existingUser = await User.findOne({
@@ -26,7 +35,9 @@ const registerUser = async ({ username, email, password, role, protocol, host })
 
     // if user already exists, throw error
     if (existingUser) {
-        logger.error(`User with email or username already exists, provided email: ${email}, provided username: ${username}`);
+        logger.error(
+            `User with email or username already exists, provided email: ${email}, provided username: ${username}`,
+        );
         throw new ApiError(409, 'User with email or username already exists');
     }
 
@@ -63,7 +74,9 @@ const registerUser = async ({ username, email, password, role, protocol, host })
 
     const createdUser = await User.findById(user._id).select(USER_SAFE_FIELDS);
     if (!createdUser) {
-        logger.error(`User created but failed to fetch user details, userId: ${user._id}`);
+        logger.error(
+            `User created but failed to fetch user details, userId: ${user._id}`,
+        );
         throw new ApiError(500, 'User registration failed');
     }
 
@@ -75,13 +88,17 @@ const login = async ({ email, password, protocol, host }) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-        logger.error(`User not found with provided email for login, provided email: ${email}`);
+        logger.error(
+            `User not found with provided email for login, provided email: ${email}`,
+        );
         throw new ApiError(400, 'User does not exist');
     }
 
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-        logger.error(`Invalid password provided for login, provided email: ${email}`);
+        logger.error(
+            `Invalid password provided for login, provided email: ${email}`,
+        );
         throw new ApiError(400, 'Invalid Password');
     }
 
@@ -91,7 +108,9 @@ const login = async ({ email, password, protocol, host }) => {
 
     const loggedInUser = await User.findById(user._id).select(USER_SAFE_FIELDS);
     if (!loggedInUser) {
-        logger.error(`User logged in but failed to fetch user details, userId: ${user._id}`);
+        logger.error(
+            `User logged in but failed to fetch user details, userId: ${user._id}`,
+        );
         throw new ApiError(500, 'User registration failed');
     }
 
@@ -138,7 +157,9 @@ const logoutUser = async ({ userId }) => {
 
 const verifyEmail = async ({ verificationToken }) => {
     if (!verificationToken) {
-        logger.error(`Email verification token is missing for email verification`);
+        logger.error(
+            `Email verification token is missing for email verification`,
+        );
         throw new ApiError(400, 'Email verification token is missing');
     }
 
@@ -150,7 +171,9 @@ const verifyEmail = async ({ verificationToken }) => {
     });
 
     if (!user) {
-        logger.error(`Invalid or expired email verification token provided for email verification`);
+        logger.error(
+            `Invalid or expired email verification token provided for email verification`,
+        );
         throw new ApiError(400, 'Token is invalid or expired');
     }
 
@@ -167,7 +190,9 @@ const verifyEmail = async ({ verificationToken }) => {
 const resendEmailVerification = async ({ userId, protocol, host }) => {
     const user = await User.findById(userId);
     if (!user) {
-        logger.error(`User not found for resending email verification, userId: ${userId}`);
+        logger.error(
+            `User not found for resending email verification, userId: ${userId}`,
+        );
         throw new ApiError(404, 'User does not exist');
     }
 
@@ -207,12 +232,16 @@ const refreshAccessToken = async ({ incomingRefreshToken }) => {
 
         const user = await User.findById(decodedRefreshToken._id);
         if (!user) {
-            logger.error(`User not found for provided refresh token during access token refresh`);
+            logger.error(
+                `User not found for provided refresh token during access token refresh`,
+            );
             throw new ApiError(401, 'Invalid refresh token');
         }
 
         if (user.refreshToken !== incomingRefreshToken) {
-            logger.error(`Refresh token mismatch for user during access token refresh, userId: ${user._id}`);
+            logger.error(
+                `Refresh token mismatch for user during access token refresh, userId: ${user._id}`,
+            );
             throw new ApiError(401, 'Refresh token expired');
         }
 
@@ -228,7 +257,9 @@ const refreshAccessToken = async ({ incomingRefreshToken }) => {
             cookieOptions: buildCookieOptions(),
         };
     } catch (error) {
-        logger.error(`Error verifying refresh token during access token refresh, error: ${error}`);
+        logger.error(
+            `Error verifying refresh token during access token refresh, error: ${error}`,
+        );
         throw new ApiError(401, 'Invalid refresh token');
     }
 };
@@ -236,7 +267,9 @@ const refreshAccessToken = async ({ incomingRefreshToken }) => {
 const forgotPasswordRequest = async ({ email }) => {
     const user = await User.findOne({ email });
     if (!user) {
-        logger.error(`User not found with provided email for forgot password request, provided email: ${email}`);
+        logger.error(
+            `User not found with provided email for forgot password request, provided email: ${email}`,
+        );
         throw new ApiError(404, 'User Not Found');
     }
 
@@ -283,14 +316,15 @@ const changeCurrentPassword = async ({ userId, oldPassword, newPassword }) => {
     const user = await User.findById(userId);
     const isPasswordValid = await user.comparePassword(oldPassword);
     if (!isPasswordValid) {
-        logger.error(`Invalid old password provided for changing current password, userId: ${userId}`);
+        logger.error(
+            `Invalid old password provided for changing current password, userId: ${userId}`,
+        );
         throw new ApiError(400, 'Invalid Old Password');
     }
 
     user.password = newPassword;
     user.save({ validateBeforeSave: false });
 };
-
 
 // helper functions
 const validateRole = (role) => {
@@ -301,7 +335,9 @@ const validateRole = (role) => {
 
     const normalizedRole = role.toLowerCase();
     if (!AvailableUserRoles.includes(normalizedRole)) {
-        logger.error(`Invalid user role provided for auth, provided role: ${role}`);
+        logger.error(
+            `Invalid user role provided for auth, provided role: ${role}`,
+        );
         throw new ApiError(400, 'Invalid user role');
     }
 
@@ -335,7 +371,9 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        logger.error(`Error generating access and refresh tokens for userId: ${userId}, error: ${error}`);
+        logger.error(
+            `Error generating access and refresh tokens for userId: ${userId}, error: ${error}`,
+        );
         throw new ApiError(500, 'Failed to generate tokens');
     }
 };

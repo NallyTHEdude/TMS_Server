@@ -15,7 +15,9 @@ app.use(cookieParser());
 // cors configuration
 app.use(
     cors({
-        origin: config.CORS_ORIGIN?.split(',') || `${config.BASE_URL}:${config.PORT}`,
+        origin:
+            config.CORS_ORIGIN?.split(',') ||
+            `${config.BASE_URL}:${config.PORT}`,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],

@@ -5,7 +5,8 @@ import { landlordService } from '../services/landlord.service.js';
 const getAllActiveTenantsOfProperty = asyncHandler(async (req, res) => {
     const propertyId = req.params.propertyId;
 
-    const tenants = await landlordService.getActiveTenantsByProperty(propertyId);
+    const tenants =
+        await landlordService.getActiveTenantsByProperty(propertyId);
 
     return res
         .status(200)

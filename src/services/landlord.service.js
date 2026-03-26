@@ -6,16 +6,19 @@ import {
     AvailablePropertyTypes,
     AvailableIssueTypes,
 } from '../constants/property.constants.js';
-import { CacheEntities, CacheIdentifiers , CacheTTL} from '../constants/cache.constants.js';
+import {
+    CacheEntities,
+    CacheIdentifiers,
+    CacheTTL,
+} from '../constants/cache.constants.js';
 import { logger } from '../utils/logger.js';
 import { getDataFromRedis, setDataToRedis } from '../utils/redis.js';
 
-
-const getActiveTenantsByProperty = async (propertyId)=>{
+const getActiveTenantsByProperty = async (propertyId) => {
     // check in cache first
     const tenantsCacheKey = `${CacheEntities.TENANT}:${CacheIdentifiers.GET_ACTIVE_TENANTS_BY_PROPERTY(propertyId)}`;
-    const tenantsFromCache = await getDataFromRedis(tenantsCacheKey); 
-    if(tenantsFromCache !== null) {
+    const tenantsFromCache = await getDataFromRedis(tenantsCacheKey);
+    if (tenantsFromCache !== null) {
         return tenantsFromCache;
     }
 
@@ -38,41 +41,45 @@ const getActiveTenantsByProperty = async (propertyId)=>{
     await setDataToRedis(tenantsCacheKey, tenants, CacheTTL.TENANT_TTL);
 
     return tenants;
-}
+};
 
 const filterProperties = async (filters) => {
     validateFilters(filters);
     const pipeline = buildPropertyPipeline(filters);
     const properties = await Property.aggregate(pipeline);
     return properties;
-}
-
+};
 
 // helper functions
 const validateFilters = (filters) => {
     // add state, city, name, tenantName, minPriceRange, maxPriceRange validation when required
-    const {
-        status, type, issue,
-    } = filters;
+    const { status, type, issue } = filters;
 
-    if(status && !AvailablePropertyStatus.includes(status)) {
+    if (status && !AvailablePropertyStatus.includes(status)) {
         logger.error(`Invalid Status filter, status is: ${status}`);
         throw new ApiError(400, `Invalid status filter for property`);
     }
-    if(type && !AvailablePropertyTypes.includes(type)) {
+    if (type && !AvailablePropertyTypes.includes(type)) {
         logger.error(`Invalid 'type' filter, type is: ${type}`);
         throw new ApiError(400, `Invalid type filter for property`);
     }
-    if(issue && !AvailableIssueTypes.includes(issue)) {
+    if (issue && !AvailableIssueTypes.includes(issue)) {
         logger.error(`Invalid 'issue' filter, issue is: ${issue}`);
         throw new ApiError(400, `Invalid issue filter for property`);
     }
-}
+};
 
 const buildPropertyPipeline = (filters) => {
     const {
-        state, city, status, name, type, issue,
-        tenantName, minPriceRange, maxPriceRange,
+        state,
+        city,
+        status,
+        name,
+        type,
+        issue,
+        tenantName,
+        minPriceRange,
+        maxPriceRange,
     } = filters;
 
     const pipeline = [];
@@ -81,8 +88,7 @@ const buildPropertyPipeline = (filters) => {
     if (state) propertyMatch.state = { $regex: state, $options: 'i' };
     if (city) propertyMatch.city = { $regex: city, $options: 'i' };
 
-    if (status){
-
+    if (status) {
         propertyMatch.status = status;
     }
     if (name) propertyMatch.name = { $regex: name, $options: 'i' };
@@ -93,38 +99,64 @@ const buildPropertyPipeline = (filters) => {
         const min = minPriceRange ? Number(minPriceRange) : null;
         const max = maxPriceRange ? Number(maxPriceRange) : null;
 
-        if(min !== null && max !== null && min >= max) {
-            throw new ApiError(400, 'minPriceRange cannot be greater or equal to maxPriceRange');
+        if (min !== null && max !== null && min >= max) {
+            throw new ApiError(
+                400,
+                'minPriceRange cannot be greater or equal to maxPriceRange',
+            );
         }
         propertyMatch.rentAmount = {};
-        if (min!=null) propertyMatch.rentAmount.$gte = min;
-        if (max!=null) propertyMatch.rentAmount.$lte = max;
+        if (min != null) propertyMatch.rentAmount.$gte = min;
+        if (max != null) propertyMatch.rentAmount.$lte = max;
     }
 
     pipeline.push({ $match: propertyMatch });
 
     if (tenantName) {
         pipeline.push(
-            { $lookup: { from: 'tenants', localField: '_id', foreignField: 'propertyId', as: 'tenant' } },
+            {
+                $lookup: {
+                    from: 'tenants',
+                    localField: '_id',
+                    foreignField: 'propertyId',
+                    as: 'tenant',
+                },
+            },
             { $unwind: '$tenant' },
-            { $lookup: { from: 'users', localField: 'tenant.userId', foreignField: '_id', as: 'user' } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'tenant.userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
             { $unwind: '$user' },
             {
                 $match: {
                     $or: [
-                        { 'user.fullName': { $regex: tenantName, $options: 'i' } },
-                        { 'user.username': { $regex: tenantName, $options: 'i' } },
+                        {
+                            'user.fullName': {
+                                $regex: tenantName,
+                                $options: 'i',
+                            },
+                        },
+                        {
+                            'user.username': {
+                                $regex: tenantName,
+                                $options: 'i',
+                            },
+                        },
                     ],
                 },
-            }
+            },
         );
     }
 
     return pipeline;
 };
 
-
 export const landlordService = {
     getActiveTenantsByProperty,
     filterProperties,
-}
+};

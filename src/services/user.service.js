@@ -13,10 +13,11 @@ import { User } from '../models/user.models.js';
 const USER_SAFE_FIELDS =
     '-password -refreshToken -forgotPasswordToken -forgotPasswordTokenExpiry -emailVerificationToken -emailVerificationExpiry';
 
-
 const getUserDetails = async ({ currentUser }) => {
     if (!currentUser) {
-        logger.error(`User not found in getUserDetails service, provided currentUser: ${currentUser}`);
+        logger.error(
+            `User not found in getUserDetails service, provided currentUser: ${currentUser}`,
+        );
         throw new ApiError(404, 'user not found');
     }
 
@@ -70,7 +71,9 @@ const updateUserDetails = async ({
     }).select(USER_SAFE_FIELDS);
 
     if (!user) {
-        logger.error(`User not found in updateUserDetails service, provided currentUserId: ${currentUserId}`);
+        logger.error(
+            `User not found in updateUserDetails service, provided currentUserId: ${currentUserId}`,
+        );
         throw new ApiError(404, 'user not found');
     }
 
@@ -82,13 +85,17 @@ const deleteUserAccount = async ({ currentUserId, password }) => {
 
     const user = await User.findById(currentUserId).select('+password');
     if (!user) {
-        logger.error(`User not found in deleteUserAccount service, provided currentUserId: ${currentUserId}`);
+        logger.error(
+            `User not found in deleteUserAccount service, provided currentUserId: ${currentUserId}`,
+        );
         throw new ApiError(404, 'User does not exist in database');
     }
 
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-        logger.error(`Invalid password provided for account deletion, userId: ${currentUserId}`);
+        logger.error(
+            `Invalid password provided for account deletion, userId: ${currentUserId}`,
+        );
         throw new ApiError(401, 'Invalid password');
     }
 
@@ -111,7 +118,9 @@ const updateUserAvatar = async ({ currentUserId, avatarLocalPath }) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     if (!avatar) {
-        logger.error(`Failed to upload avatar to Cloudinary for userId: ${currentUserId}, avatarLocalPath: ${avatarLocalPath}`);
+        logger.error(
+            `Failed to upload avatar to Cloudinary for userId: ${currentUserId}, avatarLocalPath: ${avatarLocalPath}`,
+        );
         throw new ApiError(500, 'Something went wrong while uploading avatar');
     }
 
@@ -141,19 +150,24 @@ const updateUserAvatar = async ({ currentUserId, avatarLocalPath }) => {
     return user;
 };
 
-
 // helper functions
 const validateUserDetailsPayload = ({ fullName, username, email }) => {
     if (!fullName?.trim()) {
-        logger.error(`Full name is required for updating user details, provided fullName: ${fullName}`);
+        logger.error(
+            `Full name is required for updating user details, provided fullName: ${fullName}`,
+        );
         throw new ApiError(400, 'Full name is required');
     }
     if (!email?.trim()) {
-        logger.error(`Email is required for updating user details, provided email: ${email}`);
+        logger.error(
+            `Email is required for updating user details, provided email: ${email}`,
+        );
         throw new ApiError(400, 'Email is required');
     }
     if (!username?.trim()) {
-        logger.error(`Username is required for updating user details, provided username: ${username}`);
+        logger.error(
+            `Username is required for updating user details, provided username: ${username}`,
+        );
         throw new ApiError(400, 'Username is required');
     }
 };
@@ -164,7 +178,11 @@ const normalizeUserDetails = ({ fullName, username, email }) => ({
     email: email.toLowerCase().trim(),
 });
 
-const ensureUniqueUsernameAndEmail = async ({ currentUserId, username, email }) => {
+const ensureUniqueUsernameAndEmail = async ({
+    currentUserId,
+    username,
+    email,
+}) => {
     const existingUser = await User.findOne({
         _id: { $ne: currentUserId },
         $or: [{ email }, { username }],
@@ -173,12 +191,19 @@ const ensureUniqueUsernameAndEmail = async ({ currentUserId, username, email }) 
     // if user with the same email or username already exists
     if (existingUser) {
         if (existingUser.email === email) {
-            logger.error(`Email already exists for another user, provided email: ${email}`);
+            logger.error(
+                `Email already exists for another user, provided email: ${email}`,
+            );
             throw new ApiError(400, 'Email already exists');
         }
         if (existingUser.username.toLowerCase() === username) {
-            logger.error(`Username already exists for another user, provided username: ${username}`);
-            throw new ApiError(400, 'Username is taken, select another username');
+            logger.error(
+                `Username already exists for another user, provided username: ${username}`,
+            );
+            throw new ApiError(
+                400,
+                'Username is taken, select another username',
+            );
         }
     }
 };

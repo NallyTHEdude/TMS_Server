@@ -8,13 +8,13 @@ import { connectRedis } from './utils/redis.js';
 const PORT = config.PORT;
 const BASE_URL = config.BASE_URL;
 
-await connectDB()
-await connectRedis()
+await connectDB();
+await connectRedis();
 
 //app listener
 app.listen(PORT, () => {
     logger.info(`Server is running at ${BASE_URL}:${PORT}`);
-    if(config.NODE_ENV !== 'development'){
+    if (config.NODE_ENV !== 'development') {
         console.log(`Server is running at ${BASE_URL}:${PORT}`);
     }
 });

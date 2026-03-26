@@ -79,7 +79,7 @@ Each model includes its fields, relationships, and constraints — aligned with 
 
 ---
 
-## ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`) 
+## ISSUES **SUB-OBJECT** FOR PROPERTIES(`Issues`)
 
 | Field         | Type                             | Description                                             |
 | ------------- | -------------------------------- | ------------------------------------------------------- |
@@ -158,4 +158,5 @@ Each model includes its fields, relationships, and constraints — aligned with 
 | `Property` | `id`        | `landlordId → User.id`                         | `vacant / occupied / maintenance` | Landlord-owned property                 |
 | `Tenant`   | `id`        | `userId → User.id`, `propertyId → Property.id` | `active / evicted / inactive`     | Active rental link                      |
 | `Landlord` | `id`        | `userId → User.id`                             | `active / suspended / pending`    | Financial info and properties           |
+
 ---

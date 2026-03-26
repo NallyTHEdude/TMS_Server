@@ -29,18 +29,13 @@ const registerUser = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    const {
-        accessToken,
-        refreshToken,
-        loggedInUser,
-        tenant,
-        cookieOptions,
-    } = await authService.login({
-        email,
-        password,
-        protocol: req.protocol,
-        host: req.get('host'),
-    });
+    const { accessToken, refreshToken, loggedInUser, tenant, cookieOptions } =
+        await authService.login({
+            email,
+            password,
+            protocol: req.protocol,
+            host: req.get('host'),
+        });
 
     return res
         .status(200)
