@@ -352,6 +352,62 @@ You can find full model and route docs in:
 - Introduce background job processing for email/reminder workflows
 - Expand payment integration for rent collection lifecycle
 
+## 12. Test Coverage (Jest)
+
+The project includes Jest unit tests under `src/__tests__`. Below is a basic mapping of tested service functions and the two core checks covered for each function.
+
+### auth.test.js
+
+| Service Function | Target File | Test 1 | Test 2 |
+|---|---|---|---|
+| `authService.registerUser` | `src/services/auth.service.js` | Creates tenant user/profile and sends verification email for tenant role | Rejects when user already exists |
+| `authService.login` | `src/services/auth.service.js` | Returns access/refresh tokens with user and tenant details on valid login | Rejects invalid password |
+| `authService.logoutUser` | `src/services/auth.service.js` | Clears persisted refresh token and returns cookie options | Still returns cookie options when user update result is null |
+| `authService.verifyEmail` | `src/services/auth.service.js` | Marks email as verified and persists user state for valid token | Rejects when verification token is missing |
+| `authService.resendEmailVerification` | `src/services/auth.service.js` | Regenerates token and sends verification email | Rejects when email is already verified |
+| `authService.refreshAccessToken` | `src/services/auth.service.js` | Issues new access/refresh tokens for valid refresh token | Rejects when refresh token is not provided |
+| `authService.forgotPasswordRequest` | `src/services/auth.service.js` | Stores reset token and sends forgot-password email | Rejects when email does not exist |
+| `authService.resetPassword` | `src/services/auth.service.js` | Resets password and clears token fields for valid token | Rejects for invalid/expired reset token |
+| `authService.changeCurrentPassword` | `src/services/auth.service.js` | Updates password when old password matches | Rejects when old password is incorrect |
+
+### user.test.js
+
+| Service Function | Target File | Test 1 | Test 2 |
+|---|---|---|---|
+| `userService.getUserDetails` | `src/services/user.service.js` | Returns current user details when user context exists | Rejects when current user context is missing |
+| `userService.updateUserDetails` | `src/services/user.service.js` | Updates profile and sends notification when email changes | Rejects when email/username is already used by another user |
+| `userService.deleteUserAccount` | `src/services/user.service.js` | Deletes account and sends account-deletion email for valid password | Rejects when password is invalid |
+| `userService.updateUserAvatar` | `src/services/user.service.js` | Uploads new avatar, updates user, and deletes old cloud asset | Rejects when avatar file path is missing |
+
+### tenant.test.js
+
+| Service Function | Target File | Test 1 | Test 2 |
+|---|---|---|---|
+| `tenantService.applyKYCVerification` | `src/services/tenant.service.js` | Uploads KYC document, verifies status, and clears related cache | Rejects when KYC document path is missing |
+| `tenantService.getTenantDetails` | `src/services/tenant.service.js` | Returns tenant payload from cache on cache hit | Returns profile-missing response and caches fallback payload when tenant profile is absent |
+| `tenantService.assignTenantToProperty` | `src/services/tenant.service.js` | Assigns tenant, updates property status, and clears related cache keys | Rejects when tenant is already assigned |
+| `tenantService.getAllTenantsOfProperty` | `src/services/tenant.service.js` | Returns tenant list from cache when available | Rejects when property does not exist |
+| `tenantService.removeTenantFromProperty` | `src/services/tenant.service.js` | Removes tenant from property and marks property vacant when last active tenant leaves | Rejects when tenant is not found |
+| `tenantService.getTenantKYCStatus` | `src/services/tenant.service.js` | Returns tenant KYC status for a valid tenant | Rejects when tenant is missing |
+
+### property.test.js
+
+| Service Function | Target File | Test 1 | Test 2 |
+|---|---|---|---|
+| `propertyService.addProperty` | `src/services/property.service.js` | Creates property and invalidates landlord property cache | Propagates create errors from persistence layer |
+| `propertyService.getAllProperties` | `src/services/property.service.js` | Returns list from cache when present | Queries database and stores cache on cache miss |
+| `propertyService.getOneProperty` | `src/services/property.service.js` | Returns single property from cache when present | Rejects when property is not found |
+| `propertyService.updateProperty` | `src/services/property.service.js` | Updates only allowed fields and invalidates related cache entries | Rejects when target property is not found |
+| `propertyService.addIssuesToProperty` | `src/services/property.service.js` | Adds normalized issue payload and clears related cache | Rejects when property does not exist |
+| `propertyService.deleteProperty` | `src/services/property.service.js` | Deletes property when confirmation phrase matches expected value | Rejects when confirmation phrase is incorrect |
+
+### landlord.test.js
+
+| Service Function | Target File | Test 1 | Test 2 |
+|---|---|---|---|
+| `landlordService.getActiveTenantsByProperty` | `src/services/landlord.service.js` | Returns active tenants from cache when available | Rejects when no active tenants are found in storage |
+| `landlordService.filterProperties` | `src/services/landlord.service.js` | Returns filtered properties using aggregate pipeline for valid filters | Rejects invalid status filter values |
+
 ---
 
 If you contribute new routes or models, update:
