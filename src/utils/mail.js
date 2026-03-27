@@ -23,6 +23,9 @@ const sendEmail = async (options) => {
             user: config.GMAIL_SMTP_USERNAME,
             pass: config.GMAIL_APP_PASSWORD,
         },
+          connectionTimeout: 20000, // increase timeout
+          greetingTimeout: 15000,
+          socketTimeout: 20000,
     });
 
     const mail = {
