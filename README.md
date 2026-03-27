@@ -4,6 +4,14 @@ Production-ready backend API for managing landlords, tenants, properties, and re
 
 This project is designed for teams building real estate or rental management products that need a clean, scalable backend foundation with practical production concerns already considered: Redis caching support, Dockerized runtime, structured logging, and modular service architecture.
 
+## Live Demo
+
+Base URL:
+- https://tms-server-cbtj.onrender.com
+
+Health Check:
+- GET /api/v1/health
+
 ## 1. Project Overview
 
 The Tenant Management System backend provides a centralized API for landlord and tenant workflows.
@@ -198,6 +206,7 @@ Notes:
 
 - In Docker Compose, set `REDIS_URL=redis://redis:6379` so the app resolves Redis using the Compose service name `redis`.
 - For external Redis providers, use provider-issued TLS URL and credentials.
+- In production, this app requires an external email delivery service to be configured (for example, SMTP provider, SendGrid, Amazon SES, or Mailgun) for password reset and account email flows.
 
 ## 7. Local Development Setup
 
@@ -343,12 +352,11 @@ You can find full model and route docs in:
 - Apply rate limiting and request throttling at API gateway or middleware layer
 - Validate and sanitize all request payloads (already aligned with validator middleware usage)
 
-## 11. Future Improvements
+## 11. Future Improvements for v2 API
 
 - Add comprehensive API documentation with OpenAPI/Swagger
-- Add unit/integration tests and CI pipeline enforcement
 - Add rate limiting and abuse protection middleware
-- Add distributed tracing and metrics dashboards
+- Add distributed tracing and metrics dashboards using openTelemetry or DataDog
 - Introduce background job processing for email/reminder workflows
 - Expand payment integration for rent collection lifecycle
 
@@ -407,6 +415,25 @@ The project includes Jest unit tests under `src/__tests__`. Below is a basic map
 |---|---|---|---|
 | `landlordService.getActiveTenantsByProperty` | `src/services/landlord.service.js` | Returns active tenants from cache when available | Rejects when no active tenants are found in storage |
 | `landlordService.filterProperties` | `src/services/landlord.service.js` | Returns filtered properties using aggregate pipeline for valid filters | Rejects invalid status filter values |
+
+## 13. CI/CD Overview
+
+This project uses GitHub Actions for a simple CI/CD pipeline.
+
+Pipeline triggers:
+- Push to `main` and `develop`
+- Pull requests targeting `main`
+
+Pipeline steps:
+1. Checkout repository
+2. Setup Node.js 22 with npm cache
+3. Install dependencies
+4. Run ESLint checks
+5. Run test suite
+6. Trigger Render deploy hook on `main` only
+
+Workflow file:
+- `.github/workflows/main.yaml`
 
 ---
 
