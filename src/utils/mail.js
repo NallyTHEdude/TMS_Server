@@ -7,7 +7,7 @@ const sendEmail = async (options) => {
     const mailGenerator = new Mailgen({
         theme: 'default',
         product: {
-            name: 'Task Manager',
+            name: 'Tenant Management By Nawaz',
             link: 'https://taskmanagelink.com',
         },
     });
@@ -29,7 +29,7 @@ const sendEmail = async (options) => {
     });
 
     const mail = {
-        from: `Task Manager: ${config.GMAIL_USERNAME}`,
+        from: `Tenant Management: ${config.GMAIL_USERNAME}`,
         to: options.email,
         subject: options.subject,
         text: textEmail,
