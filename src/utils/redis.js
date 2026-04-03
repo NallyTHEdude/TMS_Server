@@ -14,7 +14,7 @@ redisClient.on('error', (err) => {
 });
 
 redisClient.on('connect', () => {
-    logger.info('Redis connecting...');
+    logger.info('Redis connected');
 });
 
 redisClient.on('ready', () => {
