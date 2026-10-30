@@ -4,6 +4,8 @@ Production-ready backend API for managing landlords, tenants, properties, and re
 
 This project is designed for teams building real estate or rental management products that need a clean, scalable backend foundation with practical production concerns already considered: Redis caching support, Dockerized runtime, structured logging, and modular service architecture.
 
+**Offline KYC verification:** This backend integrates with a custom-built [Offline KYC Microservice](https://github.com/NallyTHEdude/Offline-KYC-Verification) (FastAPI) that verifies Aadhaar KYC without third-party verification APIs. It is kept as a separate service so it can be maintained and deployed independently of this backend.
+
 ## Live Demo
 
 Base URL:
